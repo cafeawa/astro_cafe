@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env
 .env.production
 
+# waline 评论数据库（含用户数据，不要提交）
+data/*.db
+
 # macOS-specific files
 .DS_Store
 
