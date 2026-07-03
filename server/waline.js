@@ -13,7 +13,8 @@ process.env.SECURE_DOMAINS = process.env.SECURE_DOMAINS || 'localhost,127.0.0.1'
 const { default: createWaline } = await import('@waline/vercel');
 
 const PORT = process.env.WALINE_PORT || 8360;
-const handler = createWaline({ env: 'production' });
+// 不传 env，默认用 vercel 模式（会 auto-sync 建表）
+const handler = createWaline();
 
 const server = createServer((req, res) => {
 	handler(req, res).catch((err) => {
