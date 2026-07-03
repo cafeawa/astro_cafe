@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<BaseLayout title={`搜索 - ${SITE_TITLE}`} description="站内搜索">
+	<main class="max-w-3xl mx-auto px-4 py-16">
+		<h1 class="text-4xl font-bold mb-8 text-center">搜索</h1>
+
+		<!-- 搜索框 -->
+		<input
+			id="search-input"
+			type="text"
+			placeholder="输入关键词搜索文章..."
+			autocomplete="off"
+			class="w-full px-6 py-4 text-lg border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow mb-10"
+		/>
+
+		<!-- 搜索结果 -->
+		<div id="search-results" class="space-y-4"></div>
+	</main>
+</BaseLayout>
+
+<script>
+	const input = document.getElementById('search-input') as HTMLInputElement;
+	const results = document.getElementById('search-results')!;
+
+	let debounceTimer: ReturnType<typeof setTimeout>;
+
+	input.addEventListener('input', () => {
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(async () => {
+			const query = input.value.trim();
+			if (!query) {
+				results.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-12">输入关键词开始搜索</p>';
+				return;
+			}
+
+			try {
+				const pagefind = await import('/pagefind/pagefind.js');
+				const searchResult = await pagefind.search(query);
+
+				if (!searchResult || searchResult.results.length === 0) {
+					results.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-12">没有找到相关文章 😿</p>';
+					return;
+				}
+
+				const items = await Promise.all(
+					searchResult.results.slice(0, 10).map(async (r: any) => {
+						const data = await r.data();
+						return {
+							url: data.url,
+							title: data.meta?.title || data.url,
+							excerpt: data.excerpt || '',
+						};
+					})
+				);
+
+				results.innerHTML = items
+					.map(
+						(item) => `
+					<a href="${item.url}" class="block p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300">
+						<h3 class="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">${item.title}</h3>
+						<p class="text-sm text-gray-500 dark:text-gray-400">${item.excerpt}</p>
+					</a>
+				`
+					)
+					.join('');
+			} catch {
+				results.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-12">搜索功能暂不可用，请运行 <code>npm run build</code> 生成索引</p>';
+			}
+		}, 300);
+	});
+</script>

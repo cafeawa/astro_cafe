@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPostsByYear } from '../utils/posts';
+import { SITE_TITLE } from '../consts';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const postsByYear = await getPostsByYear();
+---
+
+<BaseLayout title={`归档 - ${SITE_TITLE}`} description="文章归档">
+	<main class="max-w-3xl mx-auto px-4 py-16">
+		<h1 class="text-4xl font-bold mb-12 text-center">归档</h1>
+
+		{
+			postsByYear.length === 0 ? (
+				<p class="text-center text-gray-500 dark:text-gray-400 py-20">还没有文章～</p>
+			) : (
+				<div class="space-y-12">
+					{postsByYear.map(([year, posts]) => (
+						<section>
+							<h2 class="text-2xl font-bold text-gray-400 dark:text-gray-500 mb-6 sticky top-20">
+								{year}
+							</h2>
+							<div class="space-y-4 border-l-2 border-gray-200 dark:border-gray-700 pl-6">
+								{posts.map((post) => (
+									<a
+										href={`/blog/${post.id}/`}
+										class="block group"
+									>
+										<div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+											<time class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap font-mono min-w-[120px]">
+												<FormattedDate date={post.data.pubDate} />
+											</time>
+											<span class="text-lg font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+												{post.data.title}
+											</span>
+										</div>
+									</a>
+								))}
+							</div>
+						</section>
+					))}
+				</div>
+			)
+		}
+	</main>
+</BaseLayout>

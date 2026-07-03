@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_TITLE } from '../consts';
+
+// 友链数据 — 后续可迁移到 content collection 或外部 JSON
+const friends = [
+	// { name: '示例博客', url: 'https://example.com', description: '这是一个示例' },
+];
+---
+
+<BaseLayout title={`友链 - ${SITE_TITLE}`} description="友情链接">
+	<main class="max-w-3xl mx-auto px-4 py-16">
+		<h1 class="text-4xl font-bold mb-4 text-center">友链</h1>
+		<p class="text-center text-gray-500 dark:text-gray-400 mb-12">志同道合的朋友们</p>
+
+		{
+			friends.length === 0 ? (
+				<div class="text-center py-16">
+					<p class="text-gray-500 dark:text-gray-400 mb-4">还没有友链～</p>
+					<p class="text-gray-400 dark:text-gray-500 text-sm">想要交换友链？欢迎在评论区留言 👋</p>
+				</div>
+			) : (
+				<div class="grid gap-4 sm:grid-cols-2">
+					{friends.map((friend) => (
+						<a
+							href={friend.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="block p-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
+						>
+							<div class="font-semibold mb-1 group-hover:text-blue-600">{friend.name}</div>
+							<div class="text-sm text-gray-500 dark:text-gray-400">{friend.description}</div>
+						</a>
+					))}
+				</div>
+			)
+		}
+	</main>
+</BaseLayout>

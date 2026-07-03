@@ -1,0 +1,32 @@
+---
+import { WALINE_SERVER_URL } from '../consts';
+
+interface Props {
+	serverURL?: string;
+}
+
+const { serverURL = WALINE_SERVER_URL } = Astro.props;
+---
+
+<div id="waline" data-server-url={serverURL} class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"></div>
+
+<script>
+	import { init } from '@waline/client';
+
+	const el = document.getElementById('waline');
+	const serverURL = el?.dataset.serverUrl || '';
+
+	init({
+		el: '#waline',
+		serverURL,
+		dark: 'html.dark',
+		lang: 'zh-CN',
+		emoji: [
+			'https://unpkg.com/@waline/emojis@1.2.0/tieba',
+			'https://unpkg.com/@waline/emojis@1.2.0/bmoji',
+		],
+		imageUploader: false,
+		requiredMeta: ['nick', 'mail'],
+		pageSize: 10,
+	});
+</script>
