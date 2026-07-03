@@ -5,18 +5,18 @@ import { SITE_TITLE } from '../consts';
 
 <BaseLayout title={`搜索 - ${SITE_TITLE}`} description="站内搜索">
 	<main class="max-w-3xl mx-auto px-4 py-16">
-		<h1 class="text-4xl font-bold mb-8 text-center">搜索</h1>
+		<h1 class="text-4xl font-bold mb-8 text-center text-slate-800 dark:text-slate-100">搜索</h1>
 
 		<input
 			id="search-input"
 			type="text"
 			placeholder="输入关键词搜索文章..."
 			autocomplete="off"
-			class="w-full px-6 py-4 text-lg border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow mb-10"
+			class="w-full px-6 py-4 text-lg border border-[rgba(217,156,113,0.2)] dark:border-white/10 bg-white dark:bg-[#2a2420] focus:outline-none focus:ring-2 focus:ring-[var(--accent-text)] focus:border-transparent transition-shadow mb-10"
 		/>
 
 		<div id="search-results" class="space-y-4">
-			<p class="text-center text-gray-500 dark:text-gray-400 py-12">输入关键词开始搜索</p>
+			<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>
 		</div>
 	</main>
 </BaseLayout>
@@ -28,15 +28,11 @@ import { SITE_TITLE } from '../consts';
 		var debounceTimer;
 		var pagefindReady = false;
 
-		// 运行时动态加载 Pagefind（构建后才生成 /pagefind/pagefind.js）
 		var s = document.createElement('script');
 		s.src = '/pagefind/pagefind.js';
-		s.onload = function () {
-			pagefindReady = true;
-		};
+		s.onload = function () { pagefindReady = true; };
 		s.onerror = function () {
-			results.innerHTML =
-				'<p class="text-center text-gray-500 dark:text-gray-400 py-12">搜索索引未生成，请运行 <code>npm run build</code></p>';
+			results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引未生成，请运行 <code>npm run build</code></p>';
 		};
 		document.head.appendChild(s);
 
@@ -45,56 +41,40 @@ import { SITE_TITLE } from '../consts';
 			debounceTimer = setTimeout(function () {
 				var query = input.value.trim();
 				if (!query) {
-					results.innerHTML =
-						'<p class="text-center text-gray-500 dark:text-gray-400 py-12">输入关键词开始搜索</p>';
+					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>';
 					return;
 				}
 				if (!pagefindReady) {
-					results.innerHTML =
-						'<p class="text-center text-gray-500 dark:text-gray-400 py-12">搜索索引加载中...</p>';
+					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引加载中...</p>';
 					return;
 				}
 
-				window.pagefind
-					.search(query)
-					.then(function (searchResult) {
-						if (!searchResult || !searchResult.results.length) {
-							results.innerHTML =
-								'<p class="text-center text-gray-500 dark:text-gray-400 py-12">没有找到相关文章 😿</p>';
-							return;
-						}
-						return Promise.all(
-							searchResult.results.slice(0, 10).map(function (r) {
-								return r.data().then(function (data) {
-									return {
-										url: data.url,
-										title: (data.meta && data.meta.title) || data.url,
-										excerpt: data.excerpt || '',
-									};
-								});
-							})
-						).then(function (items) {
-							results.innerHTML = items
-								.map(function (item) {
-									return (
-										'<a href="' +
-										item.url +
-										'" class="block p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300">' +
-										'<h3 class="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">' +
-										item.title +
-										'</h3>' +
-										'<p class="text-sm text-gray-500 dark:text-gray-400">' +
-										item.excerpt +
-										'</p></a>'
-									);
-								})
-								.join('');
-						});
-					})
-					.catch(function () {
-						results.innerHTML =
-							'<p class="text-center text-gray-500 dark:text-gray-400 py-12">搜索出错，请稍后再试</p>';
+				window.pagefind.search(query).then(function (searchResult) {
+					if (!searchResult || !searchResult.results.length) {
+						results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">没有找到相关文章 😿</p>';
+						return;
+					}
+					return Promise.all(
+						searchResult.results.slice(0, 10).map(function (r) {
+							return r.data().then(function (data) {
+								return {
+									url: data.url,
+									title: (data.meta && data.meta.title) || data.url,
+									excerpt: data.excerpt || '',
+								};
+							});
+						})
+					).then(function (items) {
+						results.innerHTML = items.map(function (item) {
+							return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
+								'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
+								'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
+								'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
+						}).join('');
 					});
+				}).catch(function () {
+					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索出错，请稍后再试</p>';
+				});
 			}, 300);
 		});
 	})();

@@ -7,12 +7,12 @@ interface Props {
 
 const { tag, href, size = 'sm' } = Astro.props;
 const sizeClass = size === 'md' ? 'px-3 py-1 text-sm' : 'px-2 py-0.5 text-xs';
-const baseClass = `${sizeClass} rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors`;
+const baseClass = `${sizeClass} font-medium bg-[var(--accent-light)] text-[var(--accent-text)] dark:bg-[rgba(255,214,186,0.15)] dark:text-[var(--accent)] hover:bg-[var(--accent-peach)] dark:hover:bg-[rgba(255,214,186,0.25)] transition-colors`;
 ---
 
 {
 	href ? (
-		<a href={href} class={baseClass} data-astro-prefetch>{tag}</a>
+		<a href={href} class={baseClass}>{tag}</a>
 	) : (
 		<span class={baseClass}>{tag}</span>
 	)

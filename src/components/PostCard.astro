@@ -14,25 +14,26 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 
 <a
 	href={`/blog/${post.id}/`}
-	class="group block p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 h-full"
+	class="flat-card p-6 group flex flex-col h-full"
 >
 	{
 		showImage && heroImage && (
 			<img
 				src={heroImage.src}
 				alt=""
-				class="w-full h-48 object-cover rounded-lg mb-4"
+				class="w-full h-48 object-cover mb-4"
 				loading="lazy"
 			/>
 		)
 	}
-	<h2 class="text-xl font-semibold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+	<h2 class="relative inline text-xl font-semibold mb-2 text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
 		{title}
+		<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
 	</h2>
-	<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+	<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">
 		<FormattedDate date={pubDate} />
 	</p>
-	<p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-3">
+	<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-3 mb-3">
 		{description}
 	</p>
 	{
@@ -42,7 +43,7 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 					<TagBadge tag={tag} />
 				))}
 				{tags.length > 4 && (
-					<span class="text-xs text-gray-400 dark:text-gray-500">+{tags.length - 4}</span>
+					<span class="text-xs text-slate-400 dark:text-slate-500">+{tags.length - 4}</span>
 				)}
 			</div>
 		)

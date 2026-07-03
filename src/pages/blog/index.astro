@@ -3,12 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts, getAllTags } from '../../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import PostCard from '../../components/PostCard.astro';
-import TagBadge from '../../components/TagBadge.astro';
 
 const posts = await getPublishedPosts();
 const allTags = await getAllTags();
 
-// 从 query string 中读取当前选中的标签
 const selectedTag = Astro.url.searchParams.get('tag') || '';
 const filteredPosts = selectedTag
 	? posts.filter((post) => post.data.tags.includes(selectedTag))
@@ -17,18 +15,17 @@ const filteredPosts = selectedTag
 
 <BaseLayout title={`博客 - ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
 	<main class="max-w-5xl mx-auto px-4 py-12">
-		<h1 class="text-4xl font-bold mb-4 text-center">博客</h1>
+		<h1 class="text-4xl font-bold mb-4 text-center text-slate-800 dark:text-slate-100">博客</h1>
 
-		<!-- 标签筛选栏 -->
 		{
 			allTags.length > 0 && (
 				<div class="flex flex-wrap justify-center gap-2 mb-10">
 					<a
 						href="/blog"
-						class={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+						class={`px-3 py-1 text-sm font-medium transition-colors border ${
 							!selectedTag
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+								? 'bg-[var(--accent)] border-[var(--accent-text)] text-slate-800'
+								: 'bg-[var(--accent-light)] dark:bg-[rgba(255,214,186,0.1)] border-[rgba(217,156,113,0.2)] dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-[var(--accent-peach)] dark:hover:bg-[rgba(255,214,186,0.15)]'
 						}`}
 					>
 						全部
@@ -36,10 +33,10 @@ const filteredPosts = selectedTag
 					{allTags.map(({ name, count }) => (
 						<a
 							href={`/blog?tag=${name}`}
-							class={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+							class={`px-3 py-1 text-sm font-medium transition-colors border ${
 								selectedTag === name
-									? 'bg-blue-600 text-white'
-									: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+									? 'bg-[var(--accent)] border-[var(--accent-text)] text-slate-800'
+									: 'bg-[var(--accent-light)] dark:bg-[rgba(255,214,186,0.1)] border-[rgba(217,156,113,0.2)] dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-[var(--accent-peach)] dark:hover:bg-[rgba(255,214,186,0.15)]'
 							}`}
 						>
 							{name} ({count})
@@ -49,10 +46,9 @@ const filteredPosts = selectedTag
 			)
 		}
 
-		<!-- 文章列表 -->
 		{
 			filteredPosts.length === 0 ? (
-				<p class="text-center text-gray-500 dark:text-gray-400 py-20">
+				<p class="text-center text-slate-500 dark:text-slate-400 py-20">
 					{selectedTag ? `没有找到标签为「${selectedTag}」的文章` : '还没有文章，敬请期待～'}
 				</p>
 			) : (

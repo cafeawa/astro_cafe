@@ -9,30 +9,31 @@ const postsByYear = await getPostsByYear();
 
 <BaseLayout title={`归档 - ${SITE_TITLE}`} description="文章归档">
 	<main class="max-w-3xl mx-auto px-4 py-16">
-		<h1 class="text-4xl font-bold mb-12 text-center">归档</h1>
+		<h1 class="text-4xl font-bold mb-12 text-center text-slate-800 dark:text-slate-100">归档</h1>
 
 		{
 			postsByYear.length === 0 ? (
-				<p class="text-center text-gray-500 dark:text-gray-400 py-20">还没有文章～</p>
+				<p class="text-center text-slate-500 dark:text-slate-400 py-20">还没有文章～</p>
 			) : (
 				<div class="space-y-12">
 					{postsByYear.map(([year, posts]) => (
 						<section>
-							<h2 class="text-2xl font-bold text-gray-400 dark:text-gray-500 mb-6 sticky top-20">
+							<h2 class="text-2xl font-bold text-slate-400 dark:text-slate-500 mb-6 sticky top-20">
 								{year}
 							</h2>
-							<div class="space-y-4 border-l-2 border-gray-200 dark:border-gray-700 pl-6">
+							<div class="space-y-4 border-l-2 border-[rgba(217,156,113,0.2)] dark:border-white/10 pl-6">
 								{posts.map((post) => (
 									<a
 										href={`/blog/${post.id}/`}
 										class="block group"
 									>
 										<div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
-											<time class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap font-mono min-w-[120px]">
+											<time class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono min-w-[120px]">
 												<FormattedDate date={post.data.pubDate} />
 											</time>
-											<span class="text-lg font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+											<span class="relative inline text-lg font-medium text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
 												{post.data.title}
+												<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
 											</span>
 										</div>
 									</a>

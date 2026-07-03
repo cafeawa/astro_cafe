@@ -17,14 +17,14 @@ const posts = await getPostsByTag(tag!);
 
 <BaseLayout title={`${tag} - 标签 - ${SITE_TITLE}`} description={`标签「${tag}」下的所有文章`}>
 	<main class="max-w-5xl mx-auto px-4 py-12">
-		<h1 class="text-4xl font-bold mb-4 text-center">
-			标签：<span class="text-blue-600 dark:text-blue-400">{tag}</span>
+		<h1 class="text-4xl font-bold mb-4 text-center text-slate-800 dark:text-slate-100">
+			标签：<span class="text-[var(--accent-text)] dark:text-[var(--accent)]">{tag}</span>
 		</h1>
-		<p class="text-center text-gray-500 dark:text-gray-400 mb-12">{posts.length} 篇文章</p>
+		<p class="text-center text-slate-500 dark:text-slate-400 mb-12">{posts.length} 篇文章</p>
 
 		{
 			posts.length === 0 ? (
-				<p class="text-center text-gray-500 py-20">没有相关文章～</p>
+				<p class="text-center text-slate-500 py-20">没有相关文章～</p>
 			) : (
 				<div class="grid gap-6 md:grid-cols-2">
 					{posts.map((post) => (
@@ -35,7 +35,7 @@ const posts = await getPostsByTag(tag!);
 		}
 
 		<div class="text-center mt-12">
-			<a href="/blog" class="text-blue-600 dark:text-blue-400 hover:underline">← 返回博客</a>
+			<a href="/blog" class="text-[var(--accent-text)] dark:text-[var(--accent)] hover:underline">← 返回博客</a>
 		</div>
 	</main>
 </BaseLayout>

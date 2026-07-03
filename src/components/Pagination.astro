@@ -13,56 +13,37 @@ function pageUrl(page: number): string {
 	if (page === 1) return basePath;
 	return `${basePath}/page/${page}`;
 }
+
+const btnBase = 'px-4 py-2 text-sm font-medium transition-all border';
+const activeClass = `${btnBase} bg-[var(--accent)] border-[var(--accent-text)] text-slate-800`;
+const inactiveClass = `${btnBase} border-[rgba(217,156,113,0.2)] dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-[var(--accent-light)] dark:hover:bg-[#2a2420]`;
+const disabledClass = `${btnBase} border-[rgba(217,156,113,0.1)] dark:border-white/5 text-slate-300 dark:text-slate-600 cursor-not-allowed`;
 ---
 
 <nav class="flex justify-center items-center gap-2 mt-12" aria-label="Pagination">
-	<!-- 上一页 -->
 	{
 		currentPage > 1 ? (
-			<a
-				href={pageUrl(currentPage - 1)}
-				class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-			>
-				← 上一页
-			</a>
+			<a href={pageUrl(currentPage - 1)} class={inactiveClass}>← 上一页</a>
 		) : (
-			<span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 text-sm cursor-not-allowed">
-				← 上一页
-			</span>
+			<span class={disabledClass}>← 上一页</span>
 		)
 	}
 
-	<!-- 页码 -->
 	{
-		Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+		Array.from({ length: totalPages }, (_, i) => i + 1).map((page) =>
 			page === currentPage ? (
-				<span class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium">
-					{page}
-				</span>
+				<span class={activeClass}>{page}</span>
 			) : (
-				<a
-					href={pageUrl(page)}
-					class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-				>
-					{page}
-				</a>
+				<a href={pageUrl(page)} class={inactiveClass}>{page}</a>
 			)
-		))
+		)
 	}
 
-	<!-- 下一页 -->
 	{
 		currentPage < totalPages ? (
-			<a
-				href={pageUrl(currentPage + 1)}
-				class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-			>
-				下一页 →
-			</a>
+			<a href={pageUrl(currentPage + 1)} class={inactiveClass}>下一页 →</a>
 		) : (
-			<span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-600 text-sm cursor-not-allowed">
-				下一页 →
-			</span>
+			<span class={disabledClass}>下一页 →</span>
 		)
 	}
 </nav>

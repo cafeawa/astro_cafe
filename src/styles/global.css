@@ -1,64 +1,110 @@
 @import 'tailwindcss';
 
-/* 暗黑模式：使用 class 策略（而非系统偏好），方便手动切换 */
 @variant dark (&:where(.dark, .dark *));
 
-/*
- * 以下为项目自定义样式
- * Bear Blog 的排版基础 + Tailwind 覆盖
- */
-
-/* ===== CSS 变量 ===== */
+/* ===== 1. 核心 CSS 变量 (水蜜桃治愈色系) ===== */
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
+	--accent: #FFD6BA;
+	--accent-dark: #ffc8a2;
+    --accent-text: #D99C71;
+    
+    --accent-pink: #FFDCDC;
+    --accent-light: #FFF2EB;
+    --accent-peach: #FFE8CD;
+    
 	--font-main: var(--font-atkinson, 'Atkinson Hyperlegible', sans-serif);
 }
 
-/* ===== 基础排版（非 Tailwind 覆盖的部分） ===== */
+/* ===== 2. 基础布局与背景 ===== */
 body {
 	font-family: var(--font-main);
 	font-size: 18px;
 	line-height: 1.7;
+    /* 背景保持极浅桃色，与纯白卡片形成对比 */
+    background-color: var(--accent-light);
+    @apply text-slate-700 antialiased;
 }
 
-/* 文章正文排版 */
+.dark body {
+    @apply bg-[#1a1614] text-slate-300;
+}
+
+
+/* ===== 3. 扁平化直角 UI 组件 (Flat & Sharp) ===== */
+
+/* 扁平卡片：纯白，直角，细实线边框 */
+.flat-card {
+    @apply bg-white;
+    border-radius: 0; /* 强制直角 */
+    border: 1px solid rgba(217, 156, 113, 0.2); /* 淡淡的橘粉色边框 */
+    transition: all 0.2s ease;
+}
+
+/* 悬停时：加深边框，并产生一个扁平的直角硬阴影，增加点击反馈 */
+.flat-card:hover {
+    border-color: var(--accent-text);
+    box-shadow: 4px 4px 0px var(--accent-peach);
+    transform: translate(-2px, -2px);
+}
+
+/* 扁平导航栏 */
+.flat-nav {
+    @apply bg-white border-b;
+    border-radius: 0;
+    border-color: rgba(217, 156, 113, 0.2);
+}
+
+/* 扁平直角按钮 */
+.btn-primary {
+    @apply text-slate-800 px-6 py-2 font-semibold transition-all;
+    border-radius: 0; /* 直角 */
+    background-color: var(--accent);
+    border: 1px solid var(--accent); /* 预留边框位置防止hover时跳动 */
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-dark);
+    border-color: var(--accent-text);
+}
+
+/* 暗黑模式适配 */
+.dark .flat-card {
+    @apply bg-[#2a2420];
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .flat-card:hover {
+    border-color: var(--accent-text);
+    box-shadow: 4px 4px 0px rgba(217, 156, 113, 0.2);
+}
+
+.dark .flat-nav {
+    @apply bg-[#1a1614] border-white/10;
+}
+
+
+/* ===== 4. 文章正文排版 (Prose) ===== */
 .prose {
 	max-width: 720px;
 	margin: 0 auto;
 	padding: 1em;
 }
 
-.prose p {
-	margin-bottom: 1.5em;
-	line-height: 1.8;
+.prose p { margin-bottom: 1.5em; line-height: 1.8; }
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+	margin: 1.5em 0 0.5em; font-weight: 700; line-height: 1.3;
 }
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-	margin: 1.5em 0 0.5em;
-	font-weight: 700;
-	line-height: 1.3;
-}
-
 .prose h1 { font-size: 2.25rem; }
 .prose h2 { font-size: 1.875rem; }
 .prose h3 { font-size: 1.5rem; }
 .prose h4 { font-size: 1.25rem; }
 
 .prose a {
-	color: var(--accent);
+	color: var(--accent-text);
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
-
-.prose a:hover {
-	color: var(--accent-dark);
-}
+.prose a:hover { color: var(--accent-dark); }
 
 .prose blockquote {
 	border-left: 4px solid var(--accent);
@@ -66,95 +112,11 @@ body {
 	margin: 1.5em 0;
 	font-size: 1.1em;
 	font-style: italic;
+    background: rgba(255, 214, 186, 0.15);
+    border-radius: 0; /* 引用块也改成直角 */
 }
 
-.prose pre {
-	padding: 1.25em 1.5em;
-	border-radius: 8px;
-	overflow-x: auto;
-	font-size: 0.9em;
-	line-height: 1.6;
-}
-
-.prose pre > code {
-	all: unset;
-}
-
-.prose code {
-	padding: 0.15em 0.4em;
-	background-color: rgb(229, 233, 240);
-	border-radius: 3px;
-	font-size: 0.875em;
-}
-
-.dark .prose code {
-	background-color: rgb(55, 65, 81);
-}
-
-.prose img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-	margin: 1.5em 0;
-}
-
-.prose table {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-.prose th,
-.prose td {
-	padding: 0.5em 0.75em;
-	border: 1px solid rgb(209, 213, 219);
-}
-
-.dark .prose th,
-.dark .prose td {
-	border-color: rgb(75, 85, 99);
-}
-
-.prose hr {
-	border: none;
-	border-top: 2px solid rgb(229, 233, 240);
-	margin: 2em 0;
-}
-
-.dark .prose hr {
-	border-top-color: rgb(55, 65, 81);
-}
-
-/* 暗黑模式下的 prose 文字颜色 */
-.dark .prose {
-	color: rgb(209, 213, 219);
-}
-
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6 {
-	color: rgb(243, 244, 246);
-}
-
-/* 响应式 */
-@media (max-width: 720px) {
-	body {
-		font-size: 16px;
-	}
-}
-
-/* 无障碍：屏幕阅读器专用 */
-.sr-only {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	clip: rect(1px, 1px, 1px, 1px);
-	clip-path: inset(50%);
-	white-space: nowrap;
+.dark .prose blockquote {
+    background: rgba(255, 214, 186, 0.05);
+    border-left-color: var(--accent-text);
 }
