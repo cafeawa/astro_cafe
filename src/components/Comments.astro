@@ -12,8 +12,11 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 <div id="waline" data-server-url={serverURL} class="mt-16 pt-8 border-t border-[rgba(217,156,113,0.2)] dark:border-white/10"></div>
 
 <style is:global>
-	/* 隐藏昵称/邮箱/网址输入框 */
+	/* 隐藏昵称/邮箱/网址输入框 + 头像 */
 	[data-waline] .wl-header { display: none !important; }
+	[data-waline] .wl-user-avatar,
+	[data-waline] .wl-card .wl-avatar,
+	[data-waline] img[class*="avatar"] { display: none !important; }
 
 	/* Waline 主题配色适配 — 水蜜桃色系 */
 	[data-waline] {
