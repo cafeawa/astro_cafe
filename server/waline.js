@@ -23,26 +23,26 @@ if (!existsSync(dbFile)) {
 			link TEXT, mail TEXT, nick TEXT, pid INTEGER DEFAULT 0, rid INTEGER DEFAULT 0,
 			ua TEXT, ip TEXT, type TEXT DEFAULT 'comment', status TEXT DEFAULT 'approved',
 			sticky INTEGER DEFAULT 0, "like" INTEGER DEFAULT 0, dislike INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now')),
-			createdAt TEXT DEFAULT (datetime('now')),
-			updatedAt TEXT DEFAULT (datetime('now'))
+			insertedAt TEXT DEFAULT (datetime('now','localtime')),
+			createdAt TEXT DEFAULT (datetime('now','localtime')),
+			updatedAt TEXT DEFAULT (datetime('now','localtime'))
 		);
 		CREATE TABLE IF NOT EXISTS wl_Counter (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT NOT NULL, time INTEGER DEFAULT 0,
 			reaction0 INTEGER DEFAULT 0, reaction1 INTEGER DEFAULT 0, reaction2 INTEGER DEFAULT 0,
 			reaction3 INTEGER DEFAULT 0, reaction4 INTEGER DEFAULT 0, reaction5 INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now')),
-			createdAt TEXT DEFAULT (datetime('now')),
-			updatedAt TEXT DEFAULT (datetime('now'))
+			insertedAt TEXT DEFAULT (datetime('now','localtime')),
+			createdAt TEXT DEFAULT (datetime('now','localtime')),
+			updatedAt TEXT DEFAULT (datetime('now','localtime'))
 		);
 		CREATE TABLE IF NOT EXISTS wl_Users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, display_name TEXT, email TEXT, url TEXT,
 			nick TEXT, label TEXT, type TEXT DEFAULT 'guest', avatar TEXT,
 			github TEXT, twitter TEXT, facebook TEXT, google TEXT, weibo TEXT, qq TEXT,
 			password TEXT, is2fa INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now')),
-			createdAt TEXT DEFAULT (datetime('now')),
-			updatedAt TEXT DEFAULT (datetime('now'))
+			insertedAt TEXT DEFAULT (datetime('now','localtime')),
+			createdAt TEXT DEFAULT (datetime('now','localtime')),
+			updatedAt TEXT DEFAULT (datetime('now','localtime'))
 		);
 	`);
 	db.close();
