@@ -16,7 +16,7 @@ import { SITE_TITLE } from '../consts';
 		/>
 
 		<div id="search-results" class="space-y-4">
-			<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>
+			<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引加载中...</p>
 		</div>
 	</main>
 </BaseLayout>
@@ -25,12 +25,21 @@ import { SITE_TITLE } from '../consts';
 	(function () {
 		var input = document.getElementById('search-input');
 		var results = document.getElementById('search-results');
-		var debounceTimer;
-		var pagefindReady = false;
+		if (!input || !results) return;
 
+		var debounceTimer;
+
+		// 加载 Pagefind JS — 必须用 module 模式（文件包含 export 语句）
 		var s = document.createElement('script');
-		s.src = '/pagefind/pagefind.js';
-		s.onload = function () { pagefindReady = true; };
+		s.type = 'module';
+		s.textContent = `
+			import { search as pfSearch } from '/pagefind/pagefind.js';
+			var input = document.getElementById('search-input');
+			if (input) input._pfReady = true;
+			window._pfSearch = pfSearch;
+			document.getElementById('search-results').innerHTML =
+				'<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>';
+		`;
 		s.onerror = function () {
 			results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引未生成，请运行 <code>npm run build</code></p>';
 		};
@@ -38,43 +47,38 @@ import { SITE_TITLE } from '../consts';
 
 		input.addEventListener('input', function () {
 			clearTimeout(debounceTimer);
-			debounceTimer = setTimeout(function () {
+			debounceTimer = setTimeout(async function () {
 				var query = input.value.trim();
 				if (!query) {
 					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>';
 					return;
 				}
-				if (!pagefindReady) {
-					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引加载中...</p>';
-					return;
-				}
+				if (!window._pfSearch) return;
 
-				window.pagefind.search(query).then(function (searchResult) {
+				try {
+					var searchResult = await window._pfSearch(query);
 					if (!searchResult || !searchResult.results.length) {
 						results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">没有找到相关文章 😿</p>';
 						return;
 					}
-					return Promise.all(
-						searchResult.results.slice(0, 10).map(function (r) {
-							return r.data().then(function (data) {
-								return {
-									url: data.url,
-									title: (data.meta && data.meta.title) || data.url,
-									excerpt: data.excerpt || '',
-								};
-							});
-						})
-					).then(function (items) {
-						results.innerHTML = items.map(function (item) {
-							return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
-								'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
-								'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
-								'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
-						}).join('');
-					});
-				}).catch(function () {
+					var items = [];
+					for (var i = 0; i < Math.min(searchResult.results.length, 10); i++) {
+						var data = await searchResult.results[i].data();
+						items.push({
+							url: data.url,
+							title: (data.meta && data.meta.title) || data.url,
+							excerpt: data.excerpt || '',
+						});
+					}
+					results.innerHTML = items.map(function (item) {
+						return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
+							'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
+							'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
+							'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
+					}).join('');
+				} catch (e) {
 					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索出错，请稍后再试</p>';
-				});
+				}
 			}, 300);
 		});
 	})();
