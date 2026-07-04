@@ -1,4 +1,5 @@
 ---
+import '../styles/waline.css';
 import { WALINE_SERVER_URL } from '../consts';
 
 interface Props {
@@ -10,9 +11,78 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 
 <div id="waline" data-server-url={serverURL} class="mt-16 pt-8 border-t border-[rgba(217,156,113,0.2)] dark:border-white/10"></div>
 
-<style>
+<style is:global>
 	/* 隐藏昵称/邮箱/网址输入框 */
-	#waline .wl-header { display: none !important; }
+	[data-waline] .wl-header { display: none !important; }
+
+	/* Waline 主题配色适配 — 水蜜桃色系 */
+	[data-waline] {
+		--waline-theme-color: var(--accent-text);
+		--waline-active-color: var(--accent);
+		--waline-bgcolor: transparent;
+		--waline-bgcolor-light: var(--accent-light);
+	}
+
+	/* Waline 链接/按钮 — 下划线动画（导航栏同款 ::after 实现） */
+	[data-waline] .wl-btn,
+	[data-waline] a {
+		position: relative;
+	}
+	[data-waline] .wl-btn::after,
+	[data-waline] a::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background: var(--accent-text);
+		transition: width 0.2s ease;
+	}
+	[data-waline] .wl-btn:hover::after,
+	[data-waline] a:hover::after {
+		width: 100%;
+	}
+
+	/* 提交按钮 — 与 flat-card hover 一致的 4px 硬阴影 */
+	[data-waline] .wl-btn {
+		background: var(--accent) !important;
+		border: 1px solid var(--accent-text) !important;
+		color: #5a4030 !important;
+		font-weight: 600;
+		transition: all 0.2s ease;
+	}
+	[data-waline] .wl-btn:hover {
+		background: var(--accent-dark) !important;
+		border-color: var(--accent-text) !important;
+		box-shadow: 4px 4px 0px var(--accent-peach);
+		transform: translate(-2px, -2px);
+	}
+
+	/* 输入框 — 拼合 flat-card 同款边框色 */
+	[data-waline] .wl-input,
+	[data-waline] .wl-editor,
+	[data-waline] textarea,
+	[data-waline] [class*="wl-"] {
+		border-radius: 0 !important;
+	}
+	[data-waline] .wl-input,
+	[data-waline] .wl-editor {
+		border-color: rgba(217, 156, 113, 0.2) !important;
+	}
+	[data-waline] .wl-editor:focus-within,
+	[data-waline] .wl-input:focus {
+		border-color: var(--accent-text) !important;
+	}
+
+	/* 暗黑模式 */
+	.dark [data-waline] .wl-btn {
+		background: var(--accent) !important;
+		color: #3a2a1a !important;
+	}
+	.dark [data-waline] .wl-btn:hover {
+		background: var(--accent-dark) !important;
+	}
 </style>
 
 <script>
