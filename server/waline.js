@@ -1,52 +1,12 @@
 import { createServer } from 'node:http';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { mkdirSync, existsSync } from 'node:fs';
-import Database from 'better-sqlite3';
+import { ensureDatabase, dbDir } from './schema.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataDir = resolve(__dirname, '../data');
-const dbPath = resolve(dataDir, 'waline.db');
-const dbFile = resolve(dbPath, 'waline.sqlite');
-
-mkdirSync(dbPath, { recursive: true });
-
-process.env.SQLITE_PATH = dbPath;
+process.env.SQLITE_PATH = dbDir;
 process.env.JWT_TOKEN = process.env.JWT_TOKEN || 'waline-jwt-secret-change-me';
 process.env.SECURE_DOMAINS = process.env.SECURE_DOMAINS || 'localhost,127.0.0.1';
 
-if (!existsSync(dbFile)) {
-	const db = new Database(dbFile);
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS wl_Comment (
-			id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, url TEXT, comment TEXT,
-			link TEXT, mail TEXT, nick TEXT, pid INTEGER DEFAULT 0, rid INTEGER DEFAULT 0,
-			ua TEXT, ip TEXT, type TEXT DEFAULT 'comment', status TEXT DEFAULT 'approved',
-			sticky INTEGER DEFAULT 0, "like" INTEGER DEFAULT 0, dislike INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now','localtime')),
-			createdAt TEXT DEFAULT (datetime('now','localtime')),
-			updatedAt TEXT DEFAULT (datetime('now','localtime'))
-		);
-		CREATE TABLE IF NOT EXISTS wl_Counter (
-			id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT NOT NULL, time INTEGER DEFAULT 0,
-			reaction0 INTEGER DEFAULT 0, reaction1 INTEGER DEFAULT 0, reaction2 INTEGER DEFAULT 0,
-			reaction3 INTEGER DEFAULT 0, reaction4 INTEGER DEFAULT 0, reaction5 INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now','localtime')),
-			createdAt TEXT DEFAULT (datetime('now','localtime')),
-			updatedAt TEXT DEFAULT (datetime('now','localtime'))
-		);
-		CREATE TABLE IF NOT EXISTS wl_Users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT, display_name TEXT, email TEXT, url TEXT,
-			nick TEXT, label TEXT, type TEXT DEFAULT 'guest', avatar TEXT,
-			github TEXT, twitter TEXT, facebook TEXT, google TEXT, weibo TEXT, qq TEXT,
-			password TEXT, is2fa INTEGER DEFAULT 0,
-			insertedAt TEXT DEFAULT (datetime('now','localtime')),
-			createdAt TEXT DEFAULT (datetime('now','localtime')),
-			updatedAt TEXT DEFAULT (datetime('now','localtime'))
-		);
-	`);
-	db.close();
-	console.log('已创建数据库表:', dbFile);
+if (ensureDatabase()) {
+	console.log('已创建数据库表:', dbDir);
 }
 
 const { default: createWaline } = await import('@waline/vercel');
@@ -66,5 +26,5 @@ const server = createServer((req, res) => {
 
 server.listen(PORT, () => {
 	console.log(`Waline 评论服务: http://localhost:${PORT}`);
-	console.log(`数据文件: ${dbPath}`);
+	console.log(`数据文件: ${dbDir}`);
 });
