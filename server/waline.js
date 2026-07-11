@@ -1,8 +1,8 @@
 import { createServer } from 'node:http';
-import { ensureDatabase, dbDir } from './schema.js';
+import { ensureDatabase, getJwtSecret, dbDir } from './schema.js';
 
 process.env.SQLITE_PATH = dbDir;
-process.env.JWT_TOKEN = process.env.JWT_TOKEN || 'waline-jwt-secret-change-me';
+process.env.JWT_TOKEN = process.env.JWT_TOKEN || getJwtSecret();
 process.env.SECURE_DOMAINS = process.env.SECURE_DOMAINS || 'localhost,127.0.0.1';
 
 if (ensureDatabase()) {

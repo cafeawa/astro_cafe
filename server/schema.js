@@ -1,6 +1,7 @@
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mkdirSync, existsSync } from 'node:fs';
+import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import Database from 'better-sqlite3';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -9,6 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const dataDir = resolve(__dirname, '../data');
 export const dbDir = resolve(dataDir, 'waline.db');
 export const dbFile = resolve(dbDir, 'waline.sqlite');
+export const jwtSecretFile = resolve(dbDir, '.jwt-secret');
 
 // 建表 SQL —— 三张表统一带 createdAt 列与 localtime 默认值。
 // 注意：insertedAt/createdAt/updatedAt 的 DEFAULT 用 localtime，避免时区偏差与 epoch 时间。
@@ -49,4 +51,17 @@ export function ensureDatabase() {
 	db.exec(CREATE_TABLES_SQL);
 	db.close();
 	return created;
+}
+
+// 读取或生成持久化的 JWT 密钥（存放在已被 gitignore 的 data/waline.db/ 目录内）。
+// 避免硬编码公开密钥；重启后密钥稳定，admin 会话不失效。
+export function getJwtSecret() {
+	mkdirSync(dbDir, { recursive: true });
+	if (existsSync(jwtSecretFile)) {
+		const saved = readFileSync(jwtSecretFile, 'utf8').trim();
+		if (saved) return saved;
+	}
+	const secret = randomBytes(32).toString('hex');
+	writeFileSync(jwtSecretFile, secret, { mode: 0o600 });
+	return secret;
 }
