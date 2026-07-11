@@ -94,22 +94,13 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 	const el = document.getElementById('waline');
 	const serverURL = el?.dataset.serverUrl || '';
 
-	// DOM 就绪后移除 meta 输入区（兜底方案）
-	const observer = new MutationObserver(() => {
-		const header = document.querySelector('#waline .wl-header');
-		if (header) {
-			header.remove();
-			observer.disconnect();
-		}
-	});
-	observer.observe(document.body, { childList: true, subtree: true });
-
 	init({
 		el: '#waline',
 		serverURL,
 		dark: 'html.dark',
 		lang: 'zh-CN',
 		login: 'disable',
+		meta: [],
 		emoji: [
 			'https://unpkg.com/@waline/emojis@1.2.0/tieba',
 			'https://unpkg.com/@waline/emojis@1.2.0/bmoji',
