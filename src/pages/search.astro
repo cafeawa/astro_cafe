@@ -61,8 +61,7 @@ import { SITE_TITLE } from '../consts';
 				);
 				results.innerHTML = items.map(function (item) {
 					return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
-						'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
-						'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
+						'<h3 class="underline-hover inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title + '</h3>' +
 						'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
 				}).join('');
 			} catch (e) {

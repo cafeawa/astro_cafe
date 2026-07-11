@@ -82,6 +82,27 @@ body {
     @apply bg-[#1a1614] border-white/10;
 }
 
+/* 悬停下划线动画（共享）：给元素加 .underline-hover，
+   自身 hover 或所在 .group hover 时，底部下划线从 0 展开到 100%。
+   替代原先散落在 Header/PostCard/search 的重复 <span> 写法。 */
+.underline-hover {
+    position: relative;
+}
+.underline-hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-text);
+    transition: width 0.2s ease;
+}
+.underline-hover:hover::after,
+.group:hover .underline-hover::after {
+    width: 100%;
+}
+
 
 /* ===== 4. 文章正文排版 (Prose) ===== */
 .prose {

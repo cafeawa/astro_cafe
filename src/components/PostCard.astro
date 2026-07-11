@@ -26,9 +26,8 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 			/>
 		)
 	}
-	<h2 class="relative inline text-xl font-semibold mb-2 text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
+	<h2 class="underline-hover inline text-xl font-semibold mb-2 text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
 		{title}
-		<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
 	</h2>
 	<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">
 		<FormattedDate date={pubDate} />
