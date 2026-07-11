@@ -29,57 +29,75 @@ import { SITE_TITLE } from '../consts';
 
 		var debounceTimer;
 
-		// 加载 Pagefind JS — 必须用 module 模式（文件包含 export 语句）
-		var s = document.createElement('script');
-		s.type = 'module';
-		s.textContent = `
-			import { search as pfSearch } from '/pagefind/pagefind.js';
-			var input = document.getElementById('search-input');
-			if (input) input._pfReady = true;
-			window._pfSearch = pfSearch;
-			document.getElementById('search-results').innerHTML =
-				'<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>';
-		`;
-		s.onerror = function () {
-			results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索索引未生成，请运行 <code>npm run build</code></p>';
-		};
-		document.head.appendChild(s);
+		function renderMessage(msg) {
+			results.innerHTML =
+				'<p class="text-center text-slate-500 dark:text-slate-400 py-12">' + msg + '</p>';
+		}
 
-		input.addEventListener('input', function () {
-			clearTimeout(debounceTimer);
-			debounceTimer = setTimeout(async function () {
-				var query = input.value.trim();
-				if (!query) {
-					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">输入关键词开始搜索</p>';
+		async function runSearch() {
+			var query = input.value.trim();
+			if (!query) {
+				renderMessage('输入关键词开始搜索');
+				return;
+			}
+			if (!window._pfSearch) return; // 索引仍在加载，就绪后会自动重跑
+
+			try {
+				var searchResult = await window._pfSearch(query);
+				if (!searchResult || !searchResult.results.length) {
+					renderMessage('没有找到相关文章 😿');
 					return;
 				}
-				if (!window._pfSearch) return;
-
-				try {
-					var searchResult = await window._pfSearch(query);
-					if (!searchResult || !searchResult.results.length) {
-						results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">没有找到相关文章 😿</p>';
-						return;
-					}
-					var items = [];
-					for (var i = 0; i < Math.min(searchResult.results.length, 10); i++) {
-						var data = await searchResult.results[i].data();
-						items.push({
+				// 并行加载前 10 条结果数据（避免逐条 await 的串行延迟）
+				var items = await Promise.all(
+					searchResult.results.slice(0, 10).map(async function (r) {
+						var data = await r.data();
+						return {
 							url: data.url,
 							title: (data.meta && data.meta.title) || data.url,
 							excerpt: data.excerpt || '',
-						});
-					}
-					results.innerHTML = items.map(function (item) {
-						return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
-							'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
-							'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
-							'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
-					}).join('');
-				} catch (e) {
-					results.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-12">搜索出错，请稍后再试</p>';
-				}
-			}, 300);
+						};
+					})
+				);
+				results.innerHTML = items.map(function (item) {
+					return '<a href="' + item.url + '" class="flat-card block p-6 group">' +
+						'<h3 class="relative inline text-lg font-semibold mb-2 text-[var(--accent-text)] dark:text-[var(--accent)]">' + item.title +
+						'<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span></h3>' +
+						'<p class="text-sm text-slate-500 dark:text-slate-400">' + item.excerpt + '</p></a>';
+				}).join('');
+			} catch (e) {
+				renderMessage('搜索出错，请稍后再试');
+			}
+		}
+
+		// 加载 Pagefind（文件含 export，必须 module 模式）。
+		// 用 dynamic import + try/catch 捕获 404：静态 import 失败只抛到 window，
+		// 不会触发 script 元素的 onerror，所以改用自定义事件把状态回传给外层。
+		var loader = document.createElement('script');
+		loader.type = 'module';
+		loader.textContent = [
+			'try {',
+			'  const { search } = await import("/pagefind/pagefind.js");',
+			'  window._pfSearch = search;',
+			'  window.dispatchEvent(new Event("pagefind:ready"));',
+			'} catch (e) {',
+			'  window.dispatchEvent(new Event("pagefind:error"));',
+			'}',
+		].join('\n');
+		document.head.appendChild(loader);
+
+		window.addEventListener('pagefind:ready', function () {
+			// 就绪时若输入框已有内容则立即搜索，修复加载前抢先输入被静默丢弃的竞态
+			if (input.value.trim()) runSearch();
+			else renderMessage('输入关键词开始搜索');
+		});
+		window.addEventListener('pagefind:error', function () {
+			renderMessage('搜索索引未生成，请运行 <code>npm run build</code>');
+		});
+
+		input.addEventListener('input', function () {
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(runSearch, 300);
 		});
 	})();
 </script>
