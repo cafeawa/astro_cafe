@@ -25,3 +25,7 @@ data/*.db
 
 # jetbrains setting folder
 .idea/
+
+# others
+.claude/
+.vscode/
