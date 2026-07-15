@@ -1,0 +1,41 @@
+name: Astro CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' # 确保这里的版本与你本地 node -v 一致
+          cache: 'npm'       # 开启 npm 依赖缓存，加速后续构建
+
+      # 1. 安装依赖：使用 npm ci 而不是 npm install
+      # npm ci 会严格根据你的 package-lock.json 安装完全一致的依赖版本，防止“本地能跑，云端报错”
+      - name: Install dependencies
+        run: npm ci
+
+      # 2. 代码格式与规范检查（可选，如果你的 package.json 里有配置相关 dev 命令）
+      # 与本地开发环境一致，确保大家提交的代码风格统一
+      # - name: Check code linting
+      #   run: npm run lint
+
+      # 3. 运行 Astro 类型检查（推荐）
+      # 很多 Astro 模板默认自带 `astro check` 命令，能在打包前抓出 TypeScript 或组件语法错误
+      - name: Check Astro types
+        run: npm run check
+
+      # 4. 构建测试
+      # 使用与你生产/测试环境完全相同的打包命令
+      - name: Build Astro site
+        run: npm run build
