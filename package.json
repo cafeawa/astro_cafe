@@ -11,7 +11,8 @@
     "init-db": "node server/init-db.js",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.0",
