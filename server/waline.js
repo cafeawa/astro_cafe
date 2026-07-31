@@ -1,11 +1,26 @@
 import { createServer } from 'node:http';
 import { ensureDatabase, getJwtSecret, dbDir } from './schema.js';
 
-process.env.SQLITE_PATH = dbDir;
-process.env.JWT_TOKEN = process.env.JWT_TOKEN || getJwtSecret();
+const hasConfiguredStorage =
+	process.env.LEAN_KEY ||
+	process.env.MONGO_DB ||
+	process.env.PG_DB ||
+	process.env.POSTGRES_DATABASE ||
+	process.env.SQLITE_PATH ||
+	process.env.MYSQL_DB ||
+	process.env.TIDB_DB ||
+	process.env.GITHUB_TOKEN ||
+	process.env.TCB_ENV;
+
+if (!hasConfiguredStorage) {
+	process.env.SQLITE_PATH = dbDir;
+}
+if (process.env.SQLITE_PATH) {
+	process.env.JWT_TOKEN = process.env.JWT_TOKEN || getJwtSecret();
+}
 process.env.SECURE_DOMAINS = process.env.SECURE_DOMAINS || 'localhost,127.0.0.1';
 
-if (ensureDatabase()) {
+if (process.env.SQLITE_PATH && ensureDatabase()) {
 	console.log('已创建数据库表:', dbDir);
 }
 

@@ -7,8 +7,11 @@ import Database from 'better-sqlite3';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Waline 数据库路径（唯一数据源，waline.js 与 init-db.js 共用）
-export const dataDir = resolve(__dirname, '../data');
-export const dbDir = resolve(dataDir, 'waline.db');
+const configuredDataDir = process.env.WALINE_DATA_DIR
+	? resolve(process.env.WALINE_DATA_DIR)
+	: resolve(__dirname, '../data');
+export const dataDir = configuredDataDir;
+export const dbDir = process.env.SQLITE_PATH ? resolve(process.env.SQLITE_PATH) : resolve(dataDir, 'waline.db');
 export const dbFile = resolve(dbDir, 'waline.sqlite');
 export const jwtSecretFile = resolve(dbDir, '.jwt-secret');
 
@@ -48,9 +51,25 @@ export function ensureDatabase() {
 	mkdirSync(dbDir, { recursive: true });
 	const created = !existsSync(dbFile);
 	const db = new Database(dbFile);
-	db.exec(CREATE_TABLES_SQL);
-	db.close();
+	try {
+		db.exec(CREATE_TABLES_SQL);
+		ensureTimestampColumns(db);
+	} finally {
+		db.close();
+	}
 	return created;
+}
+
+function ensureTimestampColumns(db) {
+	for (const table of ['wl_Comment', 'wl_Counter', 'wl_Users']) {
+		const columns = db.prepare(`PRAGMA table_info(${table})`).all().map((column) => column.name);
+		for (const column of ['insertedAt', 'createdAt', 'updatedAt']) {
+			if (!columns.includes(column)) {
+				db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} TEXT`);
+				db.prepare(`UPDATE ${table} SET ${column} = datetime('now','localtime') WHERE ${column} IS NULL`).run();
+			}
+		}
+	}
 }
 
 // 读取或生成持久化的 JWT 密钥（存放在已被 gitignore 的 data/waline.db/ 目录内）。
