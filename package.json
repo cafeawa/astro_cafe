@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "waline": "node server/waline.js",
     "init-db": "node server/init-db.js",
+    "test": "node test/schema.test.js && node test/search-page.test.js",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
