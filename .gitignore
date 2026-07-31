@@ -27,5 +27,5 @@ data/*.db
 .idea/
 
 # others
-.claude/
-.vscode/
+.claude/*.json
+.vscode/*.json
