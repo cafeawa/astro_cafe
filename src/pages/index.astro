@@ -2,9 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getRecentPosts, getPublishedPosts, getAllTags } from '../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION, HERO, SITE_AUTHOR, SOCIAL_LINKS } from '../consts';
-import PostCard from '../components/PostCard.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 
-const recentPosts = await getRecentPosts(3);
+const recentPosts = await getRecentPosts(4);
 const allPosts = await getPublishedPosts();
 const allTags = await getAllTags();
 
@@ -22,16 +22,6 @@ const socialIcons: Record<string, string> = {
 	github:
 		'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
 };
-
-// 左栏板块导航（去掉首页，避免当前页自我高亮）
-const navSections = [
-	{ href: '/blog', label: '博客', icon: ['M4 19.5A2.5 2.5 0 0 1 6.5 17H20', 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'] },
-	{ href: '/tags', label: '标签', icon: ['M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z', 'M7.5 7.5h.01'] },
-	{ href: '/archive', label: '归档', icon: ['M2 3h20v5H2z', 'M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8', 'M10 12h4'] },
-	{ href: '/search', label: '搜索', icon: ['M11 11a8 8 0 1 1 0 16 8 8 0 1 1 0-16z', 'M21 21l-4.3-4.3'] },
-	{ href: '/friends', label: '友链', icon: ['M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71', 'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'] },
-	{ href: '/about', label: '关于', icon: ['M12 8a5 5 0 1 0-5-5 5 5 0 0 0 5 5z', 'M20 21a8 8 0 0 0-16 0'] },
-];
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -39,27 +29,10 @@ const navSections = [
 	<main class="max-w-7xl mx-auto px-4 py-8 relative z-10">
 
 		<div class="flex gap-8">
-			<!-- 左栏：板块导航 -->
-			<aside class="hidden lg:block w-44 shrink-0">
-				<div class="sticky top-20 flex flex-col gap-1">
-					{navSections.map((item) => (
-						<a
-							href={item.href}
-							class="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 shrink-0">
-								{item.icon.map((d) => <path d={d} />)}
-							</svg>
-							<span>{item.label}</span>
-						</a>
-					))}
-				</div>
-			</aside>
-
 			<!-- 中栏：主内容 -->
 			<div class="flex-1 min-w-0">
 				<!-- Hero 卡 -->
-				<section class="flat-card p-8 md:p-10 text-center relative overflow-hidden mb-6">
+				<section class="flat-card p-8 md:p-10 text-center relative overflow-hidden mb-8">
 					<div class="relative z-10 flex flex-col items-center">
 						<div class="mb-4 grid size-16 place-items-center rounded-full bg-gradient-to-br from-primary-200 via-primary-300 to-primary-400 text-2xl font-bold text-[var(--primary-700)] shadow-lg dark:from-primary-500/30 dark:via-primary-400/30 dark:to-primary-300/30 dark:text-primary-200">
 							{avatarInitial}
@@ -77,11 +50,11 @@ const navSections = [
 					</div>
 				</section>
 
-				<!-- 最新文章 -->
+				<!-- 最新文章：列表样式 -->
 				{
 					recentPosts.length > 0 && (
 						<section>
-							<div class="flex justify-between items-end mb-6 px-2">
+							<div class="flex justify-between items-end mb-5 px-1">
 								<h2 class="text-xl font-bold text-slate-800 dark:text-zinc-100">最新文章</h2>
 								<a
 									href="/blog"
@@ -92,9 +65,24 @@ const navSections = [
 								</a>
 							</div>
 
-							<div class="grid gap-6 md:grid-cols-2">
+							<div class="flat-card divide-y divide-slate-200 dark:divide-zinc-800">
 								{recentPosts.map((post) => (
-									<PostCard post={post} />
+									<a href={`/blog/${post.id}/`} class="block p-5 group transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50">
+										<div class="mb-1.5 flex items-center gap-2 text-sm text-slate-500 dark:text-zinc-400">
+											<FormattedDate date={post.data.pubDate} />
+											{
+												post.data.tags.length > 0 && (
+													<span class="text-xs text-slate-400 dark:text-zinc-500">· {post.data.tags.slice(0, 2).join(' / ')}</span>
+												)
+											}
+										</div>
+										<h3 class="text-lg font-semibold text-slate-800 dark:text-zinc-100 group-hover:text-[var(--primary-main)] dark:group-hover:text-primary-300 transition-colors line-clamp-1">
+											{post.data.title}
+										</h3>
+										<p class="text-sm text-slate-500 dark:text-zinc-400 line-clamp-2 mt-1">
+											{post.data.description}
+										</p>
+									</a>
 								))}
 							</div>
 						</section>
@@ -105,7 +93,6 @@ const navSections = [
 			<!-- 右栏：热门标签 / 统计 / 关于 -->
 			<aside class="hidden lg:block w-72 shrink-0">
 				<div class="sticky top-20 space-y-6">
-					<!-- 热门标签 -->
 					{
 						hotTags.length > 0 && (
 							<section class="flat-card overflow-hidden">
@@ -127,7 +114,6 @@ const navSections = [
 						)
 					}
 
-					<!-- 数据统计 -->
 					<section class="flat-card p-4 grid grid-cols-3 divide-x divide-slate-200 dark:divide-zinc-800">
 						<div class="text-center">
 							<div class="text-xl font-bold text-slate-800 dark:text-zinc-100">{statPosts}</div>
@@ -143,7 +129,6 @@ const navSections = [
 						</div>
 					</section>
 
-					<!-- 关于我 -->
 					<section class="flat-card p-5">
 						<div class="flex items-center gap-3">
 							<div class="grid size-11 place-items-center rounded-full bg-gradient-to-br from-primary-200 via-primary-300 to-primary-400 font-bold text-[var(--primary-700)] dark:from-primary-500/30 dark:via-primary-400/30 dark:to-primary-300/30 dark:text-primary-200">
