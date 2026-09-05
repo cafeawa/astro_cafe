@@ -9,7 +9,7 @@ interface Props {
 const { serverURL = WALINE_SERVER_URL } = Astro.props;
 ---
 
-<div id="waline" data-server-url={serverURL} class="mt-16 pt-8 border-t border-[rgba(217,156,113,0.2)] dark:border-white/10"></div>
+<div id="waline" data-server-url={serverURL} class="mt-16 pt-8 border-t border-slate-200 dark:border-zinc-800"></div>
 
 <style is:global>
 	/* 隐藏昵称/邮箱/网址输入框 + 头像 */
@@ -18,15 +18,15 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 	[data-waline] .wl-card .wl-avatar,
 	[data-waline] img[class*="avatar"] { display: none !important; }
 
-	/* Waline 主题配色适配 — 水蜜桃色系 */
+	/* Waline 主题配色适配 — 冰蓝系 */
 	[data-waline] {
-		--waline-theme-color: var(--accent-text);
-		--waline-active-color: var(--accent);
+		--waline-theme-color: var(--primary-500);
+		--waline-active-color: var(--primary-300);
 		--waline-bg-color: transparent;
-		--waline-bg-color-light: var(--accent-light);
+		--waline-bg-color-light: #f8fafc;
 	}
 
-	/* Waline 链接/按钮 — 下划线动画（导航栏同款 ::after 实现） */
+	/* Waline 链接/按钮 — 下划线动画 */
 	[data-waline] .wl-btn,
 	[data-waline] a {
 		position: relative;
@@ -39,7 +39,7 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 		left: 0;
 		width: 0;
 		height: 2px;
-		background: var(--accent-text);
+		background: var(--primary-500);
 		transition: width 0.2s ease;
 	}
 	[data-waline] .wl-btn:hover::after,
@@ -47,44 +47,54 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 		width: 100%;
 	}
 
-	/* 提交按钮 — 与 flat-card hover 一致的 4px 硬阴影 */
+	/* 提交按钮 — 圆角胶囊，冰蓝填充 */
 	[data-waline] .wl-btn {
-		background: var(--accent) !important;
-		border: 1px solid var(--accent-text) !important;
-		color: #5a4030 !important;
+		background: var(--primary-500) !important;
+		border: 1px solid transparent !important;
+		border-radius: 9999px !important;
+		color: #ffffff !important;
 		font-weight: 600;
 		transition: all 0.2s ease;
 	}
 	[data-waline] .wl-btn:hover {
-		background: var(--accent-dark) !important;
-		border-color: var(--accent-text) !important;
-		box-shadow: 4px 4px 0px var(--accent-peach);
-		transform: translate(-2px, -2px);
+		background: var(--primary-600) !important;
+		box-shadow: 0 6px 16px rgba(62, 151, 199, 0.28);
 	}
 
-	/* 输入框 — 拼合 flat-card 同款边框色 */
+	/* 输入框 — 圆角冰蓝描边 */
 	[data-waline] .wl-input,
 	[data-waline] .wl-editor,
 	[data-waline] textarea,
 	[data-waline] [class*="wl-"] {
-		border-radius: 0 !important;
+		border-radius: 0.75rem !important;
 	}
 	[data-waline] .wl-input,
 	[data-waline] .wl-editor {
-		border-color: rgba(217, 156, 113, 0.2) !important;
+		border-color: #e2e8f0 !important;
+		background-color: #ffffff !important;
 	}
 	[data-waline] .wl-editor:focus-within,
 	[data-waline] .wl-input:focus {
-		border-color: var(--accent-text) !important;
+		border-color: var(--primary-400) !important;
 	}
 
 	/* 暗黑模式 */
 	.dark [data-waline] .wl-btn {
-		background: var(--accent) !important;
-		color: #3a2a1a !important;
+		background: var(--primary-400) !important;
+		color: #ffffff !important;
 	}
 	.dark [data-waline] .wl-btn:hover {
-		background: var(--accent-dark) !important;
+		background: var(--primary-300) !important;
+	}
+	.dark [data-waline] .wl-input,
+	.dark [data-waline] .wl-editor {
+		border-color: #3f3f46 !important;
+		background-color: #18181b !important;
+		color: #f4f4f5 !important;
+	}
+	.dark [data-waline] .wl-editor:focus-within,
+	.dark [data-waline] .wl-input:focus {
+		border-color: var(--primary-400) !important;
 	}
 </style>
 

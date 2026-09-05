@@ -21,18 +21,18 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 			<img
 				src={heroImage.src}
 				alt=""
-				class="w-full h-48 object-cover mb-4"
+				class="w-full h-48 object-cover mb-4 rounded-lg"
 				loading="lazy"
 			/>
 		)
 	}
-	<h2 class="underline-hover inline text-xl font-semibold mb-2 text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
+	<h2 class="inline text-xl font-semibold mb-2 text-slate-800 group-hover:text-[var(--primary-main)] dark:text-zinc-100 dark:group-hover:text-primary-300 transition-colors">
 		{title}
 	</h2>
-	<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+	<p class="text-sm text-slate-500 dark:text-zinc-400 mb-2">
 		<FormattedDate date={pubDate} />
 	</p>
-	<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-3 mb-3">
+	<p class="text-slate-500 dark:text-zinc-400 text-sm leading-relaxed line-clamp-3 mb-3">
 		{description}
 	</p>
 	{
@@ -42,7 +42,7 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 					<TagBadge tag={tag} />
 				))}
 				{tags.length > 4 && (
-					<span class="text-xs text-slate-400 dark:text-slate-500">+{tags.length - 4}</span>
+					<span class="text-xs text-slate-400 dark:text-zinc-500">+{tags.length - 4}</span>
 				)}
 			</div>
 		)

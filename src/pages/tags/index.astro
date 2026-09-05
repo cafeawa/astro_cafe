@@ -8,8 +8,8 @@ const tags = await getAllTags();
 
 <BaseLayout title={`标签 - ${SITE_TITLE}`} description="文章标签云">
 	<main class="max-w-4xl mx-auto px-4 py-16">
-		<h1 class="text-4xl font-bold mb-4 text-center text-slate-800 dark:text-slate-100">标签</h1>
-		<p class="text-center text-slate-500 dark:text-slate-400 mb-12">共 {tags.length} 个标签</p>
+		<h1 class="text-4xl font-bold mb-4 text-center text-slate-800 dark:text-zinc-100">标签</h1>
+		<p class="text-center text-slate-500 dark:text-zinc-400 mb-12">共 {tags.length} 个标签</p>
 
 		{
 			tags.length === 0 ? (
@@ -21,10 +21,10 @@ const tags = await getAllTags();
 							href={`/tags/${name}/`}
 							class="flat-card px-6 py-3 text-center group"
 						>
-							<div class="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-[var(--accent-text)] dark:group-hover:text-[var(--accent)] transition-colors">
+							<div class="text-lg font-semibold text-slate-800 group-hover:text-[var(--primary-main)] dark:text-zinc-100 dark:group-hover:text-primary-300 transition-colors">
 								{name}
 							</div>
-							<div class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+							<div class="text-sm text-slate-500 dark:text-zinc-400 mt-1">
 								{count} 篇文章
 							</div>
 						</a>

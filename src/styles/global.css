@@ -2,107 +2,158 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-/* ===== 1. 核心 CSS 变量 (水蜜桃治愈色系) ===== */
+/* ===== 1. 设计令牌 (冰蓝主色 + slate/zinc 明暗色板) ===== */
+/* @theme 让 Tailwind 生成 bg-primary-*、text-primary、border-slate-200 等语义工具类 */
+@theme {
+	--color-primary: var(--primary-main);
+	--color-primary-50: var(--primary-50);
+	--color-primary-100: var(--primary-100);
+	--color-primary-200: var(--primary-200);
+	--color-primary-300: var(--primary-300);
+	--color-primary-400: var(--primary-400);
+	--color-primary-500: var(--primary-500);
+	--color-primary-600: var(--primary-600);
+	--color-primary-700: var(--primary-700);
+	--color-primary-800: var(--primary-800);
+	--color-primary-900: var(--primary-900);
+	--color-primary-950: var(--primary-950);
+}
+
+/* 原始色板 — 浅色模式用 slate (surface)，深色模式切成 zinc */
 :root {
-	--accent: #FFD6BA;
-	--accent-dark: #ffc8a2;
-    --accent-text: #D99C71;
-    
-    --accent-pink: #FFDCDC;
-    --accent-light: #FFF2EB;
-    --accent-peach: #FFE8CD;
-    
+	/* 冰蓝主色（霜冻通透感，不是纯蓝） */
+	--primary-main: #2a6890;
+	--primary-50: #edf6fb;
+	--primary-100: #d9edf8;
+	--primary-200: #b8deef;
+	--primary-300: #8cc9e3;
+	--primary-400: #5bafd4;
+	--primary-500: #3e97c7;
+	--primary-600: #2f7dad;
+	--primary-700: #2a6890;
+	--primary-800: #275574;
+	--primary-900: #23465c;
+	--primary-950: #132b3b;
+
 	--font-main: var(--font-atkinson, 'Atkinson Hyperlegible', sans-serif);
 }
 
+/* 深色模式下把主强调色调浅，保证在深背景上有对比度 */
+.dark {
+	--primary-main: #8cc9e3;
+}
+
 /* ===== 2. 基础布局与背景 ===== */
+/* 浅色沿用 slate 极浅底，深色切到 zinc-950 */
 body {
 	font-family: var(--font-main);
 	font-size: 18px;
 	line-height: 1.7;
-    /* 背景保持极浅桃色，与纯白卡片形成对比 */
-    background-color: var(--accent-light);
-    @apply text-slate-700 antialiased;
+	background-color: #f8fafc;
+	color: #334155;
+	-webkit-font-smoothing: antialiased;
 }
 
 .dark body {
-    @apply bg-[#1a1614] text-slate-300;
+	background-color: #09090b;
+	color: #f4f4f5;
 }
 
+/* ===== 3. 圆润玻璃风 UI 组件 ===== */
 
-/* ===== 3. 扁平化直角 UI 组件 (Flat & Sharp) ===== */
-
-/* 扁平卡片：纯白，直角，细实线边框 */
+/* 圆角卡片：白底、细边框、极淡阴影、圆角 */
 .flat-card {
-    @apply bg-white;
-    border-radius: 0; /* 强制直角 */
-    border: 1px solid rgba(217, 156, 113, 0.2); /* 淡淡的橘粉色边框 */
-    transition: all 0.2s ease;
+	border-radius: 0.75rem; /* rounded-xl */
+	border: 1px solid #e2e8f0; /* slate-200 */
+	background-color: #ffffff;
+	box-shadow: 0 1px 1.5px rgba(15, 23, 42, 0.05);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-/* 悬停时：加深边框，并产生一个扁平的直角硬阴影，增加点击反馈 */
 .flat-card:hover {
-    border-color: var(--accent-text);
-    box-shadow: 4px 4px 0px var(--accent-peach);
-    transform: translate(-2px, -2px);
+	border-color: #94a3b8; /* slate-400 */
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
-/* 扁平导航栏 */
-.flat-nav {
-    @apply bg-white border-b;
-    border-radius: 0;
-    border-color: rgba(217, 156, 113, 0.2);
-}
-
-/* 扁平直角按钮 */
-.btn-primary {
-    @apply text-slate-800 px-6 py-2 font-semibold transition-all;
-    border-radius: 0; /* 直角 */
-    background-color: var(--accent);
-    border: 1px solid var(--accent); /* 预留边框位置防止hover时跳动 */
-}
-
-.btn-primary:hover {
-    background-color: var(--accent-dark);
-    border-color: var(--accent-text);
-}
-
-/* 暗黑模式适配 */
 .dark .flat-card {
-    @apply bg-[#2a2420];
-    border-color: rgba(255, 255, 255, 0.1);
+	border-color: #27272a; /* zinc-800 */
+	background-color: #18181b; /* zinc-900 */
+	box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.3);
 }
 
 .dark .flat-card:hover {
-    border-color: var(--accent-text);
-    box-shadow: 4px 4px 0px rgba(217, 156, 113, 0.2);
+	border-color: #52525b; /* zinc-600 */
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-.dark .flat-nav {
-    @apply bg-[#1a1614] border-white/10;
+/* 主按钮：圆角胶囊，冰蓝填充 */
+.btn-primary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 9999px;
+	padding: 0.5rem 1.375rem;
+	background-color: var(--primary-500);
+	border: 1px solid transparent;
+	color: #ffffff;
+	font-weight: 600;
+	transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 悬停下划线动画（共享）：给元素加 .underline-hover，
-   自身 hover 或所在 .group hover 时，底部下划线从 0 展开到 100%。
-   替代原先散落在 Header/PostCard/search 的重复 <span> 写法。 */
+.btn-primary:hover {
+	background-color: var(--primary-600);
+	box-shadow: 0 4px 12px rgba(62, 151, 199, 0.28);
+}
+
+/* 次级/描边按钮 glass pill */
+.btn-ghost {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 9999px;
+	padding: 0.5rem 1.375rem;
+	border: 1px solid #cbd5e1; /* slate-300 */
+	color: #334155;
+	font-weight: 500;
+	background-color: transparent;
+	transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-ghost:hover {
+	background-color: rgba(62, 151, 199, 0.08);
+	border-color: var(--primary-300);
+	color: var(--primary-700);
+}
+
+.dark .btn-ghost {
+	border-color: #3f3f46; /* zinc-700 */
+	color: #d4d4d8;
+}
+
+.dark .btn-ghost:hover {
+	background-color: rgba(140, 201, 227, 0.12);
+	border-color: var(--primary-300);
+	color: var(--primary-300);
+}
+
+/* 悬停下划线动画（可选）—— 给元素加 .underline-hover */
 .underline-hover {
-    position: relative;
+	position: relative;
 }
 .underline-hover::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent-text);
-    transition: width 0.2s ease;
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: var(--primary-main);
+	transition: width 0.2s ease;
 }
 .underline-hover:hover::after,
 .group:hover .underline-hover::after {
-    width: 100%;
+	width: 100%;
 }
-
 
 /* ===== 4. 文章正文排版 (Prose) ===== */
 .prose {
@@ -121,23 +172,28 @@ body {
 .prose h4 { font-size: 1.25rem; }
 
 .prose a {
-	color: var(--accent-text);
+	color: var(--primary-700);
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
-.prose a:hover { color: var(--accent-dark); }
+.prose a:hover { color: var(--primary-500); }
+
+.dark .prose a {
+	color: var(--primary-300);
+}
+.dark .prose a:hover { color: var(--primary-200); }
 
 .prose blockquote {
-	border-left: 4px solid var(--accent);
+	border-left: 4px solid var(--primary-300);
 	padding: 0.5em 0 0.5em 1.25em;
 	margin: 1.5em 0;
 	font-size: 1.1em;
 	font-style: italic;
-    background: rgba(255, 214, 186, 0.15);
-    border-radius: 0; /* 引用块也改成直角 */
+	background: rgba(140, 201, 227, 0.08);
+	border-radius: 0 0.5rem 0.5rem 0;
 }
 
 .dark .prose blockquote {
-    background: rgba(255, 214, 186, 0.05);
-    border-left-color: var(--accent-text);
+	background: rgba(140, 201, 227, 0.06);
+	border-left-color: var(--primary-400);
 }

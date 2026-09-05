@@ -12,20 +12,18 @@ const recentPosts = await getRecentPosts(3);
 
 		<section class="flat-card p-10 md:p-16 text-center relative overflow-hidden">
 			<div class="relative z-10 flex flex-col items-center">
-				<h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-slate-800 dark:text-white">
+				<h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-slate-800 dark:text-zinc-100">
 					{HERO.greeting}
 				</h1>
-				<p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-8">
+				<p class="text-lg md:text-xl text-slate-500 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
 					{HERO.subtitle}
 				</p>
 				<div class="flex justify-center gap-4 w-full sm:w-auto">
-					<a href="/blog" class="btn-primary relative group inline-block">
+					<a href="/blog" class="btn-primary group inline-block">
 						浏览文章
-						<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
 					</a>
-					<a href="/about" class="relative group inline-block px-6 py-2 rounded-none font-medium transition-all bg-white dark:bg-[#2a2420] border border-slate-300 dark:border-[#4a423d] text-slate-600 dark:text-slate-300 hover:bg-[#FFF2EB] dark:hover:bg-[#3a322d]">
+					<a href="/about" class="btn-ghost inline-block">
 						关于我
-						<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
 					</a>
 				</div>
 			</div>
@@ -35,10 +33,10 @@ const recentPosts = await getRecentPosts(3);
 			recentPosts.length > 0 && (
 				<section>
 					<div class="flex justify-between items-end mb-6 px-2">
-						<h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">最新文章</h2>
-						<a href="/blog" class="relative group inline-block text-sm font-medium text-[#D99C71] hover:text-[#FFD6BA] transition-colors">
+						<h2 class="text-2xl font-bold text-slate-800 dark:text-zinc-100">最新文章</h2>
+						<a href="/blog" class="relative group inline-block text-sm font-medium text-[var(--primary-main)] dark:text-primary-300 hover:text-primary-500 dark:hover:text-primary-200 transition-colors">
 							查看全部 →
-							<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
+							<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--primary-main)] transition-all duration-200 group-hover:w-full"></span>
 						</a>
 					</div>
 
@@ -49,16 +47,16 @@ const recentPosts = await getRecentPosts(3);
 								class="flat-card p-6 group flex flex-col h-full"
 							>
 								<div class="mb-4">
-									<h3 class="relative inline text-lg font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#D99C71] transition-colors line-clamp-2">
+									<h3 class="relative inline text-lg font-bold text-slate-800 dark:text-zinc-100 group-hover:text-[var(--primary-main)] dark:group-hover:text-primary-300 transition-colors line-clamp-2">
 										{post.data.title}
-										<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--accent-text)] transition-all duration-200 group-hover:w-full"></span>
+										<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--primary-main)] transition-all duration-200 group-hover:w-full"></span>
 									</h3>
 									<br />
-									<span class="bg-[#FFE8CD]/60 text-[#D99C71] dark:text-[#FFD6BA] dark:bg-[#FFD6BA]/10 px-2.5 py-1 rounded-none text-xs font-semibold mb-3 inline-block">
+									<span class="bg-primary-100 text-primary-700 rounded-full px-2.5 py-1 text-xs font-semibold mb-3 inline-block dark:bg-primary-500/15 dark:text-primary-300">
 										{post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
 									</span>
 								</div>
-								<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-3 mt-auto">
+								<p class="text-slate-500 dark:text-zinc-400 text-sm leading-relaxed line-clamp-3 mt-auto">
 									{post.data.description}
 								</p>
 							</a>
