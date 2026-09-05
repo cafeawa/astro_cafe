@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getRecentPosts } from '../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION, HERO } from '../consts';
+import PostCard from '../components/PostCard.astro';
 
 const recentPosts = await getRecentPosts(3);
 ---
@@ -42,24 +43,7 @@ const recentPosts = await getRecentPosts(3);
 
 					<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{recentPosts.map((post) => (
-							<a
-								href={`/blog/${post.id}/`}
-								class="flat-card p-6 group flex flex-col h-full"
-							>
-								<div class="mb-4">
-									<h3 class="relative inline text-lg font-bold text-slate-800 dark:text-zinc-100 group-hover:text-[var(--primary-main)] dark:group-hover:text-primary-300 transition-colors line-clamp-2">
-										{post.data.title}
-										<span class="absolute bottom-0 left-0 w-0 h-[2px] bg-[var(--primary-main)] transition-all duration-200 group-hover:w-full"></span>
-									</h3>
-									<br />
-									<span class="bg-primary-100 text-primary-700 rounded-full px-2.5 py-1 text-xs font-semibold mb-3 inline-block dark:bg-primary-500/15 dark:text-primary-300">
-										{post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}
-									</span>
-								</div>
-								<p class="text-slate-500 dark:text-zinc-400 text-sm leading-relaxed line-clamp-3 mt-auto">
-									{post.data.description}
-								</p>
-							</a>
+							<PostCard post={post} />
 						))}
 					</div>
 				</section>
