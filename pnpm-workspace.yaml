@@ -1,0 +1,6 @@
+# pnpm 工作区配置
+# 允许这些包运行构建脚本（原生依赖，必须在 pnpm 10 里显式允许）
+onlyBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+  - sharp
