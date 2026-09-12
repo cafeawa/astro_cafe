@@ -8,11 +8,9 @@ export const SITE_AUTHOR = 'cafeawa';
 // 导航栏菜单项
 export const NAV_ITEMS = [
 	{ href: '/', label: '首页' },
-	{ href: '/blog', label: '博客' },
+	{ href: '/blog', label: '文章' },
 	{ href: '/tags', label: '标签' },
 	{ href: '/archive', label: '归档' },
-	{ href: '/search', label: '搜索' },
-	{ href: '/friends', label: '友链' },
 	{ href: '/about', label: '关于' },
 ];
 

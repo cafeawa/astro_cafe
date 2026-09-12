@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_TITLE } from '../consts';
+
+const friends: { name: string; url: string; description: string }[] = [
+	// { name: '示例博客', url: 'https://example.com', description: '这是一个示例' },
+];
 ---
 
 <BaseLayout title={`关于 - ${SITE_TITLE}`} description="关于我">
@@ -28,6 +32,32 @@ import { SITE_TITLE } from '../consts';
 				<li>评论系统使用 <a href="https://waline.js.org">Waline</a></li>
 				<li>托管在自己的本地服务器上</li>
 			</ul>
+
+			<hr />
+
+			<h2>友情链接</h2>
+			{
+				friends.length === 0 ? (
+					<div class="text-center py-8">
+						<p class="text-slate-500 dark:text-zinc-400 mb-2">还没有友链～</p>
+						<p class="text-slate-400 dark:text-zinc-500 text-sm">想要交换友链？欢迎在评论区留言 👋</p>
+					</div>
+				) : (
+					<div class="not-prose my-6 grid gap-4 sm:grid-cols-2">
+						{friends.map((friend) => (
+							<a
+								href={friend.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="flat-card p-5 group"
+							>
+								<div class="font-semibold text-slate-800 dark:text-zinc-100 mb-1 group-hover:text-[var(--primary-main)] dark:group-hover:text-primary-300 transition-colors">{friend.name}</div>
+								<div class="text-sm text-slate-500 dark:text-zinc-400">{friend.description}</div>
+							</a>
+						))}
+					</div>
+				)
+			}
 		</div>
 	</main>
 </BaseLayout>
