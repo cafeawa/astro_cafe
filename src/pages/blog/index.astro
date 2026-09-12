@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts, getAllTags } from '../../utils/posts';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
-import PostCard from '../../components/PostCard.astro';
+import PostListItem from '../../components/PostListItem.astro';
 
 const posts = await getPublishedPosts();
 const allTags = await getAllTags();
@@ -14,7 +14,7 @@ const filteredPosts = selectedTag
 ---
 
 <BaseLayout title={`博客 - ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
-	<main class="max-w-5xl mx-auto px-4 py-12">
+	<main class="max-w-4xl mx-auto px-4 py-12">
 		<h1 class="text-4xl font-bold mb-4 text-center text-slate-800 dark:text-zinc-100">博客</h1>
 
 		{
@@ -52,9 +52,9 @@ const filteredPosts = selectedTag
 					{selectedTag ? `没有找到标签为「${selectedTag}」的文章` : '还没有文章，敬请期待～'}
 				</p>
 			) : (
-				<div class="grid gap-6 md:grid-cols-2">
+				<div class="flex flex-col gap-4">
 					{filteredPosts.map((post) => (
-						<PostCard post={post} />
+						<PostListItem post={post} />
 					))}
 				</div>
 			)

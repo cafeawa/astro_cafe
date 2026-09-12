@@ -1,17 +1,40 @@
 ---
 interface Props {
 	date: Date;
+	relative?: boolean;
 }
 
-const { date } = Astro.props;
+const { date, relative = false } = Astro.props;
+
+/** 绝对日期：2024年1月5日 */
+function absoluteDate(d: Date): string {
+	return d.toLocaleDateString('zh-CN', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	});
+}
+
+/** 相对时间：刚刚 / x分钟前 / x小时前 / x天前 / x周前 / x个月前，超过一年回落到绝对日期 */
+function relativeDate(d: Date): string {
+	const diff = Date.now() - d.getTime();
+	const minute = 60 * 1000;
+	const hour = 60 * minute;
+	const day = 24 * hour;
+	const week = 7 * day;
+	const month = 30 * day;
+	const year = 365 * day;
+
+	if (diff < minute) return '刚刚';
+	if (diff < hour) return `${Math.floor(diff / minute)}分钟前`;
+	if (diff < day) return `${Math.floor(diff / hour)}小时前`;
+	if (diff < week) return `${Math.floor(diff / day)}天前`;
+	if (diff < month) return `${Math.floor(diff / week)}周前`;
+	if (diff < year) return `${Math.floor(diff / month)}个月前`;
+	return absoluteDate(d);
+}
 ---
 
 <time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
+	{relative ? relativeDate(date) : absoluteDate(date)}
 </time>
