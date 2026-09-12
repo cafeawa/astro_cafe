@@ -4,8 +4,16 @@ import { SITE_TITLE } from '../consts';
 ---
 
 <BaseLayout title={`搜索 - ${SITE_TITLE}`} description="站内搜索">
-	<main data-search-auto-open class="max-w-3xl mx-auto px-4 py-16 text-center">
-		<h1 class="text-4xl font-bold mb-8 text-slate-800 dark:text-zinc-100">搜索文章</h1>
-		<button type="button" data-search-trigger aria-controls="search-input" class="btn-primary">打开搜索框</button>
+	<main data-search-auto-open class="max-w-3xl mx-auto px-4 py-16">
+		<div class="card-hero px-6 py-12 text-center">
+			<div class="relative z-10 flex flex-col items-center">
+				<span class="eyebrow mb-3">Search</span>
+				<h1 class="text-4xl font-bold mb-3 text-slate-800 dark:text-zinc-100">搜索文章</h1>
+				<p class="mb-8 text-sm text-slate-500 dark:text-zinc-400">
+					支持标题与正文全文检索，输入关键词即可跳转
+				</p>
+				<button type="button" data-search-trigger aria-controls="search-input" class="btn-primary">打开搜索框</button>
+			</div>
+		</div>
 	</main>
 </BaseLayout>

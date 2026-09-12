@@ -26,14 +26,15 @@ const socialIcons: Record<string, string> = {
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
 
-	<main class="max-w-7xl mx-auto px-4 py-8 relative z-10">
+	<main class="max-w-7xl mx-auto px-4 py-10">
 
 		<div class="flex gap-8">
 			<!-- 中栏：主内容 -->
 			<div class="flex-1 min-w-0">
 				<!-- Hero 卡 -->
-				<section class="flat-card p-8 md:p-10 text-center relative overflow-hidden mb-8">
+				<section class="card-hero p-8 md:p-10 text-center mb-10">
 					<div class="relative z-10 flex flex-col items-center">
+						<span class="eyebrow mb-3">Welcome</span>
 						<div class="mb-4 grid size-16 place-items-center rounded-full bg-gradient-to-br from-primary-200 via-primary-300 to-primary-400 text-2xl font-bold text-[var(--primary-700)] shadow-lg dark:from-primary-500/30 dark:via-primary-400/30 dark:to-primary-300/30 dark:text-primary-200">
 							{avatarInitial}
 						</div>
@@ -55,7 +56,12 @@ const socialIcons: Record<string, string> = {
 					recentPosts.length > 0 && (
 						<section>
 							<div class="flex justify-between items-end mb-5 px-1">
-								<h2 class="text-xl font-bold text-slate-800 dark:text-zinc-100">最新文章</h2>
+								<div>
+									<span class="eyebrow">Latest</span>
+									<h2 class="section-title mt-1.5 text-xl font-bold text-slate-800 dark:text-zinc-100">
+										最新文章
+									</h2>
+								</div>
 								<a
 									href="/blog"
 									class="relative group inline-block text-sm font-medium text-[var(--primary-main)] dark:text-primary-300 hover:text-primary-500 dark:hover:text-primary-200 transition-colors"
@@ -81,11 +87,14 @@ const socialIcons: Record<string, string> = {
 					{
 						hotTags.length > 0 && (
 							<section class="flat-card overflow-hidden">
-								<h2 class="px-4 pt-4 pb-2 font-bold text-slate-800 dark:text-zinc-100">热门标签</h2>
+								<div class="px-4 pt-4 pb-2">
+									<span class="eyebrow">Tags</span>
+									<h2 class="mt-1.5 font-bold text-slate-800 dark:text-zinc-100">热门标签</h2>
+								</div>
 								<ul class="pb-2">
 									{hotTags.map(({ name, count }) => (
 										<li>
-											<a href={`/tags/${name}/`} class="flex items-center gap-2.5 px-4 py-2.5 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800/50">
+											<a href={`/tags/${name}/`} class="flex items-center gap-2.5 px-4 py-2.5 transition-colors hover:bg-primary-50/70 dark:hover:bg-primary-900/15">
 												<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-slate-500 dark:text-zinc-400">
 													<path d="M3 3h8l8 8-8 8-8-8z" />
 												</svg>
@@ -99,17 +108,17 @@ const socialIcons: Record<string, string> = {
 						)
 					}
 
-					<section class="flat-card p-4 grid grid-cols-3 divide-x divide-slate-200 dark:divide-zinc-800">
+					<section class="card-inset grid grid-cols-3 divide-x divide-slate-200/80 dark:divide-zinc-800 p-4">
 						<div class="text-center">
-							<div class="text-xl font-bold text-slate-800 dark:text-zinc-100">{statPosts}</div>
+							<div class="text-2xl font-bold tabular-nums text-[var(--primary-main)] dark:text-primary-300">{statPosts}</div>
 							<div class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">文章</div>
 						</div>
 						<div class="text-center">
-							<div class="text-xl font-bold text-slate-800 dark:text-zinc-100">{statTags}</div>
+							<div class="text-2xl font-bold tabular-nums text-[var(--primary-main)] dark:text-primary-300">{statTags}</div>
 							<div class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">标签</div>
 						</div>
 						<div class="text-center">
-							<div class="text-xl font-bold text-slate-800 dark:text-zinc-100">{statYears}</div>
+							<div class="text-2xl font-bold tabular-nums text-[var(--primary-main)] dark:text-primary-300">{statYears}</div>
 							<div class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">年份</div>
 						</div>
 					</section>

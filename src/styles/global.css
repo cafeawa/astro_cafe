@@ -44,7 +44,21 @@
 }
 
 /* ===== 2. 基础布局与背景 ===== */
-/* 浅色沿用 slate 极浅底，深色切到 zinc-950 */
+/* 背景三层（自上而下）：噪点 → 网格 → 主色光斑。
+   直接画在 body 的 background-image 上，不引入额外 DOM，也不参与 z-index 排序，
+   因此正文、页脚永远盖在背景之上；顶栏的 backdrop-blur 也终于有东西可模糊。 */
+:root {
+	/* 注意：光斑的纵向锚点必须用 px。用 % 会按 body 总高度计算，
+	   长页面上光斑会被整体推到视口上方、彻底看不见（实测踩过）。 */
+	--bg-glow:
+		radial-gradient(58rem 38rem at 12% 0px, rgba(62, 151, 199, 0.14), transparent 62%),
+		radial-gradient(46rem 32rem at 92% 0px, rgba(140, 201, 227, 0.18), transparent 60%);
+	--bg-grid:
+		linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+	--bg-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.05'/></svg>");
+}
+
 body {
 	font-family: var(--font-main);
 	font-size: 18px;
@@ -52,16 +66,55 @@ body {
 	background-color: #f8fafc;
 	color: #334155;
 	-webkit-font-smoothing: antialiased;
+
+	background-image: var(--bg-grid), var(--bg-glow);
+	background-size: 34px 34px, 34px 34px, 100% 100%, 100% 100%;
+	background-repeat: repeat, repeat, no-repeat, no-repeat;
+}
+
+/* 深色底不用纯中性黑（zinc-950 会压不住冰蓝主色），改带一点冷倾向 */
+.dark {
+	--bg-glow:
+		radial-gradient(58rem 38rem at 12% 0px, rgba(62, 151, 199, 0.24), transparent 62%),
+		radial-gradient(46rem 32rem at 92% 0px, rgba(140, 201, 227, 0.14), transparent 60%);
+	--bg-grid:
+		linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 .dark body {
-	background-color: #09090b;
+	background-color: #0a0b0f;
 	color: #f4f4f5;
+}
+
+/* --- 背景变体：预览期用 ?bg=grid|glow|noise|none 直接对比，定稿后只留一种 --- */
+[data-bg='glow'] body {
+	background-image: var(--bg-glow);
+	background-size: 100% 100%, 100% 100%;
+	background-repeat: no-repeat, no-repeat;
+}
+
+[data-bg='noise'] body {
+	background-image: var(--bg-noise), var(--bg-grid), var(--bg-glow);
+	background-size: 140px 140px, 34px 34px, 34px 34px, 100% 100%, 100% 100%;
+	background-repeat: repeat, repeat, repeat, no-repeat, no-repeat;
+}
+
+[data-bg='none'] body {
+	background-image: none;
+}
+
+@media print {
+	body {
+		background-image: none;
+	}
 }
 
 /* ===== 3. 圆润玻璃风 UI 组件 ===== */
 
-/* 圆角卡片：白底、细边框、极淡阴影、圆角 */
+/* 圆角卡片：白底、细边框、极淡阴影、圆角。
+   注意：这里不再自带 :hover —— 原来非交互的 Hero、统计卡、作者卡划过也在抬阴影，
+   反馈被稀释了。悬停反馈统一交给 .hover-lift，只给真正可点的卡片用。 */
 .flat-card {
 	border-radius: 0.75rem; /* rounded-xl */
 	border: 1px solid #e2e8f0; /* slate-200 */
@@ -70,20 +123,159 @@ body {
 	transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.flat-card:hover {
-	border-color: #94a3b8; /* slate-400 */
-	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-}
-
 .dark .flat-card {
 	border-color: #27272a; /* zinc-800 */
 	background-color: #18181b; /* zinc-900 */
 	box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.3);
 }
 
-.dark .flat-card:hover {
-	border-color: #52525b; /* zinc-600 */
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+/* 卡片材质分档 —— 之前全站只有 .flat-card 一种材质：Hero、统计卡、列表行、
+   作者卡长得一模一样，层级只能靠字号区分。分档后"容器"本身就有轻重了。 */
+.card-hero {
+	position: relative;
+	border-radius: 1.25rem;
+	border: 1px solid var(--primary-100);
+	background-image: linear-gradient(135deg, #f4fafe 0%, #ffffff 42%, #eef7fc 100%);
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -24px rgba(42, 104, 144, 0.35);
+	overflow: hidden;
+}
+
+/* 顶部主色渐变细线：给容器一个视觉起点 */
+.card-hero::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 3px;
+	background: linear-gradient(90deg, var(--primary-300), var(--primary-500) 42%, transparent);
+}
+
+/* 右上柔光斑，避免大面积死白 */
+.card-hero::after {
+	content: '';
+	position: absolute;
+	top: -60%;
+	right: -10%;
+	width: 28rem;
+	height: 28rem;
+	background: radial-gradient(circle, rgba(140, 201, 227, 0.3), transparent 62%);
+	pointer-events: none;
+}
+
+.dark .card-hero {
+	border-color: rgba(140, 201, 227, 0.22);
+	background-image: linear-gradient(135deg, #12161c 0%, #16181d 45%, #101820 100%);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -26px rgba(0, 0, 0, 0.9);
+}
+
+.dark .card-hero::after {
+	background: radial-gradient(circle, rgba(62, 151, 199, 0.22), transparent 62%);
+}
+
+/* 内嵌块：浅灰底、无边框无阴影，装次要信息（统计等），不跟主卡抢重量 */
+.card-inset {
+	border-radius: 0.875rem;
+	background-color: #f1f5f9; /* slate-100 */
+	border: 1px solid transparent;
+}
+
+.dark .card-inset {
+	background-color: rgba(39, 39, 42, 0.55); /* zinc-800/55 */
+}
+
+/* 悬停抬升：区分"可点"与"不可点"（原来非交互的 Hero/统计卡也在抬阴影） */
+.hover-lift {
+	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+	transform: translateY(-2px);
+	border-color: var(--primary-300);
+	box-shadow: 0 10px 24px -14px rgba(42, 104, 144, 0.45);
+}
+
+.dark .hover-lift:hover {
+	border-color: rgba(140, 201, 227, 0.45);
+	box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.8);
+}
+
+/* eyebrow：小字号宽字距标签，给每个区块一个"开头" */
+.eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	/* primary-600 在浅底上只有 4.3:1，11px 字号过不了 AA，用 primary-700（5.8:1） */
+	color: var(--primary-700);
+}
+
+.dark .eyebrow {
+	color: var(--primary-300);
+}
+
+.eyebrow::before {
+	content: '';
+	width: 1.25rem;
+	height: 2px;
+	border-radius: 1px;
+	background: currentColor;
+	opacity: 0.55;
+}
+
+/* 区块标题左侧主色竖条 */
+.section-title {
+	position: relative;
+	padding-left: 0.7rem;
+}
+
+.section-title::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.18em;
+	bottom: 0.18em;
+	width: 3px;
+	border-radius: 2px;
+	background: linear-gradient(180deg, var(--primary-400), var(--primary-700));
+}
+
+/* 缩略图调色：Astro 自带占位图是紫/绿/橙/粉，与冰蓝主色互相打架。
+   压饱和度 + 叠主色，把图片收进同一套色系。 */
+.thumb-tint {
+	position: relative;
+	overflow: hidden;
+}
+
+.thumb-tint img {
+	filter: saturate(0.62) contrast(1.04);
+	transition: transform 0.35s ease;
+}
+
+.thumb-tint::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(155deg, rgba(42, 104, 144, 0.3), rgba(140, 201, 227, 0.08) 55%, transparent);
+	pointer-events: none;
+}
+
+.hover-lift:hover .thumb-tint img {
+	transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hover-lift,
+	.thumb-tint img {
+		transition-duration: 1ms;
+	}
+	.hover-lift:hover {
+		transform: none;
+	}
+	.hover-lift:hover .thumb-tint img {
+		transform: none;
+	}
 }
 
 /* 主按钮：圆角胶囊，冰蓝填充 */
