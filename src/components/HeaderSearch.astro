@@ -1,0 +1,246 @@
+<div id="header-search" class="header-search" data-expanded="false" data-results="false" role="search" aria-label="站内搜索">
+	<div class="search-surface">
+		<div class="search-bar">
+			<button id="search-toggle" type="button" aria-label="搜索" aria-expanded="false" aria-controls="search-input" class="search-toggle grid size-9 shrink-0 place-items-center rounded-full text-slate-500 hover:text-[var(--primary-main)] dark:text-zinc-400 dark:hover:text-primary-300">
+				<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+			</button>
+			<label for="search-input" class="sr-only">搜索文章</label>
+			<input id="search-input" class="search-input min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-zinc-100 dark:placeholder:text-zinc-500" type="search" placeholder="搜索文章…" autocomplete="off" aria-controls="search-results" aria-hidden="true" tabindex="-1" />
+			<button id="search-close" type="button" aria-label="收起搜索" aria-hidden="true" tabindex="-1" class="search-close grid size-8 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+				<svg aria-hidden="true" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg>
+			</button>
+		</div>
+
+		<div id="search-panel" class="search-panel" aria-hidden="true">
+			<div class="search-panel-inner">
+				<div id="search-results" aria-live="polite" aria-atomic="true" class="search-results overflow-y-auto overscroll-contain"></div>
+				<div class="search-hint border-t border-slate-100 px-4 py-2 text-xs text-slate-400 dark:border-zinc-800 dark:text-zinc-500">输入即可搜索 · Esc 收起</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.header-search { position: relative; width: 2.25rem; height: 2.25rem; z-index: 1; }
+	.search-surface {
+		position: absolute; top: 0; right: 0; width: 2.25rem; overflow: hidden;
+		border: 1px solid transparent; border-radius: 1.125rem; background: transparent;
+		box-shadow: 0 0 0 rgb(15 23 42 / 0%);
+		transition: width 180ms cubic-bezier(0.2, 0.8, 0.2, 1), right 180ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 140ms ease, background-color 140ms ease, box-shadow 160ms ease;
+		will-change: width;
+	}
+	.header-search[data-expanded='true'] .search-surface {
+		width: min(22rem, calc(100vw - 7.5rem)); border-color: #cbd5e1;
+		background: #fff; box-shadow: 0 6px 20px rgb(15 23 42 / 9%);
+	}
+	.header-search[data-results='true'] .search-surface { box-shadow: 0 12px 28px rgb(15 23 42 / 14%); }
+	.search-bar { position: relative; display: flex; height: 2.25rem; align-items: center; padding-right: 2.25rem; }
+	.header-search[data-results='true'] .search-bar { border-bottom: 1px solid #e2e8f0; }
+	.search-toggle { position: absolute; top: -1px; right: -1px; z-index: 1; transition: color 120ms ease, background-color 120ms ease; }
+	.search-input {
+		order: 2; height: 100%; padding-left: 0.875rem; opacity: 0; transform: translateX(0.5rem); visibility: hidden;
+		transition: opacity 110ms ease, transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 180ms;
+	}
+	.search-close {
+		order: 1; margin-left: 0.2rem; opacity: 0; transform: scale(0.8); visibility: hidden;
+		transition: opacity 100ms ease, transform 140ms ease, visibility 0s linear 180ms, color 120ms ease, background-color 120ms ease;
+	}
+	.header-search[data-expanded='true'] .search-input,
+	.header-search[data-expanded='true'] .search-close { opacity: 1; transform: none; visibility: visible; transition-delay: 45ms, 25ms, 0s; }
+	.search-input::-webkit-search-cancel-button { display: none; }
+	.search-panel {
+		display: grid; grid-template-rows: 0fr; opacity: 0; transform: translateY(-0.3rem); visibility: hidden;
+		transition: grid-template-rows 170ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 100ms ease, transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 170ms;
+	}
+	.header-search[data-results='true'] .search-panel { grid-template-rows: 1fr; opacity: 1; transform: none; visibility: visible; transition-delay: 0s; }
+	.search-panel-inner { min-height: 0; overflow: hidden; }
+	.search-results { max-height: min(28rem, calc(100dvh - 7rem)); }
+	.search-results :global(.search-result) {
+		display: block; position: relative; padding: 0.8rem 1rem; border-top: 1px solid #f1f5f9; outline: none;
+		transition: background-color 110ms ease;
+	}
+	.search-results :global(.search-result:first-child) { border-top: 0; }
+	.search-results :global(.search-result::before) {
+		content: ''; position: absolute; top: 0.55rem; bottom: 0.55rem; left: 0; width: 2px; border-radius: 9999px;
+		background: var(--primary-main); opacity: 0; transform: scaleY(0.45); transition: opacity 110ms ease, transform 130ms ease;
+	}
+	.search-results :global(.search-result:hover),
+	.search-results :global(.search-result:focus-visible) { background: rgb(62 151 199 / 7%); }
+	.search-results :global(.search-result:hover::before),
+	.search-results :global(.search-result:focus-visible::before) { opacity: 1; transform: scaleY(1); }
+	.search-results :global(mark) { border-radius: 0.18rem; background: var(--primary-100); color: var(--primary-800); }
+	:global(.dark) .header-search { color-scheme: dark; }
+	:global(.dark) .header-search[data-expanded='true'] .search-surface { border-color: #3f3f46; background: #18181b; box-shadow: 0 8px 24px rgb(0 0 0 / 30%); }
+	:global(.dark) .header-search[data-results='true'] .search-surface { box-shadow: 0 14px 32px rgb(0 0 0 / 38%); }
+	:global(.dark) .header-search[data-results='true'] .search-bar { border-bottom-color: #27272a; }
+	:global(.dark) .search-results :global(.search-result) { border-top-color: #27272a; }
+	:global(.dark) .search-results :global(.search-result:hover),
+	:global(.dark) .search-results :global(.search-result:focus-visible) { background: rgb(140 201 227 / 8%); }
+	:global(.dark) .search-results :global(mark) { background: rgb(140 201 227 / 18%); color: var(--primary-200); }
+	@media (max-width: 639px) {
+		.search-surface { position: fixed; top: 0.85rem; right: 6.5rem; }
+		.header-search[data-expanded='true'] .search-surface { right: 1rem; width: calc(100vw - 2rem); }
+		.search-results { max-height: min(29rem, calc(100dvh - 7rem)); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.search-surface, .search-input, .search-close, .search-panel,
+		.search-results :global(.search-result), .search-results :global(.search-result::before) { transition-duration: 1ms; transition-delay: 0s; }
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		function initializeSearch() {
+			var root = document.getElementById('header-search');
+			var toggle = document.getElementById('search-toggle');
+			var panel = document.getElementById('search-panel');
+			var input = document.getElementById('search-input');
+			var results = document.getElementById('search-results');
+			var closeButton = document.getElementById('search-close');
+			if (!root || !toggle || !panel || !input || !results || !closeButton) return;
+			var debounceTimer;
+			var requestId = 0;
+			var loading = false;
+			var expanded = false;
+			var hasRenderedResults = false;
+
+			function updatePanel() {
+				var visible = expanded && Boolean(input.value.trim());
+				root.dataset.results = visible ? 'true' : 'false';
+				panel.setAttribute('aria-hidden', visible ? 'false' : 'true');
+			}
+			function escapeHtml(value) {
+				return String(value).replace(/[&<>"']/g, function (char) {
+					return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+				});
+			}
+			function renderMessage(message) {
+				hasRenderedResults = false;
+				results.setAttribute('aria-busy', 'false');
+				results.innerHTML = '<p class="px-4 py-8 text-center text-sm text-slate-500 dark:text-zinc-400">' + message + '</p>';
+				updatePanel();
+			}
+			async function runSearch() {
+				var currentRequest = ++requestId;
+				var query = input.value.trim();
+				if (!query) { updatePanel(); return; }
+				if (!window._pfSearch) { renderMessage('搜索索引加载中…'); return; }
+				if (hasRenderedResults) results.setAttribute('aria-busy', 'true');
+				else renderMessage('正在搜索…');
+				try {
+					var searchResult = await window._pfSearch(query);
+					if (currentRequest !== requestId) return;
+					if (!searchResult || !searchResult.results.length) { renderMessage('没有找到相关文章'); return; }
+					var items = await Promise.all(searchResult.results.slice(0, 10).map(function (result) { return result.data(); }));
+					if (currentRequest !== requestId) return;
+					results.innerHTML = items.map(function (item) {
+						var title = escapeHtml((item.meta && item.meta.title) || item.url);
+						var excerpt = escapeHtml(item.excerpt || '').replace(/&lt;mark&gt;/g, '<mark>').replace(/&lt;\/mark&gt;/g, '</mark>');
+						return '<a href="' + escapeHtml(item.url) + '" class="search-result">' +
+							'<h3 class="mb-1 text-sm font-semibold text-[var(--primary-main)] dark:text-primary-300 break-words">' + title + '</h3>' +
+							'<p class="line-clamp-2 text-xs leading-5 text-slate-500 dark:text-zinc-400 break-words">' + excerpt + '</p></a>';
+					}).join('');
+					hasRenderedResults = true;
+					updatePanel();
+				} catch (error) {
+					if (currentRequest === requestId) renderMessage('搜索出错，请稍后再试');
+				} finally {
+					if (currentRequest === requestId) results.setAttribute('aria-busy', 'false');
+				}
+			}
+			function loadSearch() {
+				if (window._pfSearch) { runSearch(); return; }
+				if (loading) { renderMessage('搜索索引加载中…'); return; }
+				loading = true;
+				if (input.value.trim()) renderMessage('搜索索引加载中…');
+				var loader = document.createElement('script');
+				loader.type = 'module';
+				loader.textContent = [
+					'try {',
+					'  const { search } = await import("/pagefind/pagefind.js");',
+					'  window._pfSearch = search;',
+					'  window.dispatchEvent(new Event("pagefind:ready"));',
+					'} catch (e) {',
+					'  window.dispatchEvent(new Event("pagefind:error"));',
+					'}',
+				].join('\n');
+				document.head.appendChild(loader);
+			}
+			function openSearch(focusInput) {
+				if (expanded) { if (focusInput) input.focus(); return; }
+				expanded = true;
+				root.dataset.expanded = 'true';
+				toggle.setAttribute('aria-expanded', 'true');
+				input.setAttribute('aria-hidden', 'false');
+				input.tabIndex = 0;
+				closeButton.setAttribute('aria-hidden', 'false');
+				closeButton.tabIndex = 0;
+				if (focusInput) input.focus();
+				updatePanel();
+				loadSearch();
+			}
+			function closeSearch(restoreFocus) {
+				clearTimeout(debounceTimer);
+				++requestId;
+				expanded = false;
+				root.dataset.expanded = 'false';
+				root.dataset.results = 'false';
+				toggle.setAttribute('aria-expanded', 'false');
+				input.setAttribute('aria-hidden', 'true');
+				input.tabIndex = -1;
+				closeButton.setAttribute('aria-hidden', 'true');
+				closeButton.tabIndex = -1;
+				panel.setAttribute('aria-hidden', 'true');
+				results.setAttribute('aria-busy', 'false');
+				if (restoreFocus) toggle.focus();
+			}
+			document.querySelectorAll('[data-search-trigger]').forEach(function (trigger) {
+				trigger.addEventListener('click', function () { openSearch(true); });
+			});
+			toggle.addEventListener('click', function () { openSearch(true); });
+			root.addEventListener('pointerenter', function (event) {
+				if (event.pointerType === 'mouse' && !expanded) openSearch(false);
+			});
+			root.addEventListener('pointerleave', function () {
+				if (!root.contains(document.activeElement)) closeSearch(false);
+			});
+			root.addEventListener('focusout', function (event) {
+				if (!root.contains(event.relatedTarget)) closeSearch(false);
+			});
+			document.addEventListener('pointerdown', function (event) {
+				if (expanded && !root.contains(event.target)) closeSearch(false);
+			});
+			closeButton.addEventListener('click', function () { closeSearch(true); });
+			root.addEventListener('keydown', function (event) {
+				if (event.key === 'Escape' && !event.isComposing) { event.preventDefault(); closeSearch(true); }
+			});
+			window.addEventListener('pagefind:ready', function () {
+				loading = false;
+				if (expanded && input.value.trim()) runSearch();
+			});
+			window.addEventListener('pagefind:error', function () {
+				loading = false;
+				if (expanded && input.value.trim()) renderMessage('搜索暂时不可用，请稍后重试');
+			});
+			input.addEventListener('input', function (event) {
+				clearTimeout(debounceTimer);
+				++requestId;
+				updatePanel();
+				if (!input.value.trim()) {
+					hasRenderedResults = false;
+					results.setAttribute('aria-busy', 'false');
+					results.innerHTML = '';
+					return;
+				}
+				if (!event.isComposing) debounceTimer = setTimeout(loadSearch, 220);
+			});
+			input.addEventListener('compositionend', function () {
+				clearTimeout(debounceTimer);
+				debounceTimer = setTimeout(loadSearch, 220);
+			});
+			if (document.querySelector('[data-search-auto-open]')) openSearch(true);
+		}
+		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeSearch, { once: true });
+		else initializeSearch();
+	})();
+</script>
