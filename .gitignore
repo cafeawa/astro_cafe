@@ -29,3 +29,6 @@ data/*.db
 # others
 .claude/*.json
 .vscode/*.json
+
+# 开发期截图产物（由 .preview/shoot.mjs 生成，不入库）
+.preview/

@@ -39,6 +39,14 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      watch: {
+        // .preview/ 是开发期的截图产物目录。dev server 默认监听整个项目，
+        // 截图写文件（以及误留在里面的浏览器 profile）会不停触发 program reload，
+        // 把 dev server 拖到假死（实测：改这个之前它 22s 才响应一次）。这里直接排除。
+        ignored: ['**/.preview/**'],
+      },
+    },
     resolve: {
       alias: [
         // Workaround: picomatch is pure CommonJS (no ESM build / `exports` field).
