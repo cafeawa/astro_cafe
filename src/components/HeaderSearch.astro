@@ -194,9 +194,6 @@
 				results.setAttribute('aria-busy', 'false');
 				if (restoreFocus) toggle.focus();
 			}
-			document.querySelectorAll('[data-search-trigger]').forEach(function (trigger) {
-				trigger.addEventListener('click', function () { openSearch(true); });
-			});
 			toggle.addEventListener('click', function () { openSearch(true); });
 			root.addEventListener('pointerenter', function (event) {
 				if (event.pointerType === 'mouse' && !expanded) openSearch(false);
@@ -238,7 +235,6 @@
 				clearTimeout(debounceTimer);
 				debounceTimer = setTimeout(loadSearch, 220);
 			});
-			if (document.querySelector('[data-search-auto-open]')) openSearch(true);
 		}
 		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeSearch, { once: true });
 		else initializeSearch();
