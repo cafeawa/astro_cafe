@@ -43,6 +43,37 @@
 	--primary-main: #8cc9e3;
 }
 
+/* ===== 1.1 暗色表面色阶 =====
+   之前的暗色底是 #0a0b0f（比 zinc-950 还黑）+ 中性灰卡片，整体"死黑"：
+   页面下半屏没有任何层次，主色的冷调也被压住。这里把整条暗色表面抬离纯黑，
+   统一带一点冷倾向（对齐冰蓝主色），并拉开 底/卡/内嵌 三级明度差。
+   命名与 light 模式相反：暗色下"内嵌块"比页面底更亮（深色 UI 的通用做法）。 */
+.dark {
+	--surface-base: #131820; /* 页面底 */
+	--surface-raised: #1b212b; /* 卡片 */
+	--surface-inset: #202834; /* 内嵌块 / 次级填充 */
+	--surface-line: #2c3542; /* 常规描边、分隔线 */
+	--surface-line-strong: #3f4956; /* 强描边（描边按钮等） */
+	--text-strong: #e9edf2; /* 标题/正文（比纯白柔和，减少暗底眩光） */
+
+	/* 组件里写的是 dark:bg-zinc-900/50、dark:border-zinc-800 这类工具类，
+	   Tailwind v4 会编译成 var(--color-zinc-*) 引用，所以在 .dark 下重定义
+	   这条色阶即可整站生效，不必逐个改类名。 */
+	--color-zinc-950: #0e1319; /* 毛玻璃顶栏/抽屉（比页面底再暗一档） */
+	--color-zinc-900: var(--surface-raised);
+	--color-zinc-800: var(--surface-line);
+	--color-zinc-700: var(--surface-line-strong);
+	--color-zinc-600: #5d6776; /* 禁用态、装饰性图标 */
+	--color-zinc-500: #828d9c; /* 最弱的文字 */
+	--color-zinc-400: #9da7b5; /* 次要文字 */
+	--color-zinc-300: #c6cdd7; /* 导航、正文次级 */
+	--color-zinc-200: #dbe1e8;
+	--color-zinc-100: var(--text-strong);
+
+	/* 原生控件（滚动条、输入框、日期选择器）也走暗色 */
+	color-scheme: dark;
+}
+
 /* ===== 2. 基础布局与背景 ===== */
 /* 背景三层（自上而下）：噪点 → 网格 → 主色光斑。
    直接画在 body 的 background-image 上，不引入额外 DOM，也不参与 z-index 排序，
@@ -83,8 +114,8 @@ body {
 }
 
 .dark body {
-	background-color: #0a0b0f;
-	color: #f4f4f5;
+	background-color: var(--surface-base);
+	color: var(--text-strong);
 }
 
 /* --- 背景变体：预览期用 ?bg=grid|glow|noise|none 直接对比，定稿后只留一种 --- */
@@ -124,9 +155,9 @@ body {
 }
 
 .dark .flat-card {
-	border-color: #27272a; /* zinc-800 */
-	background-color: #18181b; /* zinc-900 */
-	box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.3);
+	border-color: var(--surface-line);
+	background-color: var(--surface-raised);
+	box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.35);
 }
 
 /* 卡片材质分档 —— 之前全站只有 .flat-card 一种材质：Hero、统计卡、列表行、
@@ -162,13 +193,13 @@ body {
 }
 
 .dark .card-hero {
-	border-color: rgba(140, 201, 227, 0.22);
-	background-image: linear-gradient(135deg, #12161c 0%, #16181d 45%, #101820 100%);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -26px rgba(0, 0, 0, 0.9);
+	border-color: rgba(140, 201, 227, 0.26);
+	background-image: linear-gradient(135deg, #182029 0%, #1e2632 45%, #161d27 100%);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 18px 40px -26px rgba(0, 0, 0, 0.85);
 }
 
 .dark .card-hero::after {
-	background: radial-gradient(circle, rgba(62, 151, 199, 0.22), transparent 62%);
+	background: radial-gradient(circle, rgba(62, 151, 199, 0.26), transparent 62%);
 }
 
 /* 内嵌块：浅灰底、无边框无阴影，装次要信息（统计等），不跟主卡抢重量 */
@@ -179,7 +210,7 @@ body {
 }
 
 .dark .card-inset {
-	background-color: rgba(39, 39, 42, 0.55); /* zinc-800/55 */
+	background-color: var(--surface-inset);
 }
 
 /* 悬停抬升：区分"可点"与"不可点"（原来非交互的 Hero/统计卡也在抬阴影） */
@@ -318,8 +349,8 @@ body {
 }
 
 .dark .btn-ghost {
-	border-color: #3f3f46; /* zinc-700 */
-	color: #d4d4d8;
+	border-color: var(--surface-line-strong);
+	color: var(--color-zinc-300);
 }
 
 .dark .btn-ghost:hover {

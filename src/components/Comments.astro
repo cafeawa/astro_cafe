@@ -88,9 +88,9 @@ const { serverURL = WALINE_SERVER_URL } = Astro.props;
 	}
 	.dark [data-waline] .wl-input,
 	.dark [data-waline] .wl-editor {
-		border-color: #3f3f46 !important;
-		background-color: #18181b !important;
-		color: #f4f4f5 !important;
+		border-color: var(--surface-line-strong) !important;
+		background-color: var(--surface-raised) !important;
+		color: var(--text-strong) !important;
 	}
 	.dark [data-waline] .wl-editor:focus-within,
 	.dark [data-waline] .wl-input:focus {

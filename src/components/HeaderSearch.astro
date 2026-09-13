@@ -70,10 +70,10 @@
 	.search-results :global(.search-result:focus-visible::before) { opacity: 1; transform: scaleY(1); }
 	.search-results :global(mark) { border-radius: 0.18rem; background: var(--primary-100); color: var(--primary-800); }
 	:global(.dark) .header-search { color-scheme: dark; }
-	:global(.dark) .header-search[data-expanded='true'] .search-surface { border-color: #3f3f46; background: #18181b; box-shadow: 0 8px 24px rgb(0 0 0 / 30%); }
+	:global(.dark) .header-search[data-expanded='true'] .search-surface { border-color: var(--surface-line-strong); background: var(--surface-raised); box-shadow: 0 8px 24px rgb(0 0 0 / 30%); }
 	:global(.dark) .header-search[data-results='true'] .search-surface { box-shadow: 0 14px 32px rgb(0 0 0 / 38%); }
-	:global(.dark) .header-search[data-results='true'] .search-bar { border-bottom-color: #27272a; }
-	:global(.dark) .search-results :global(.search-result) { border-top-color: #27272a; }
+	:global(.dark) .header-search[data-results='true'] .search-bar { border-bottom-color: var(--surface-line); }
+	:global(.dark) .search-results :global(.search-result) { border-top-color: var(--surface-line); }
 	:global(.dark) .search-results :global(.search-result:hover),
 	:global(.dark) .search-results :global(.search-result:focus-visible) { background: rgb(140 201 227 / 8%); }
 	:global(.dark) .search-results :global(mark) { background: rgb(140 201 227 / 18%); color: var(--primary-200); }
