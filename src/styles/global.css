@@ -138,46 +138,9 @@ body {
 }
 
 /* 卡片材质分档 —— 之前全站只有 .flat-card 一种材质：Hero、统计卡、列表行、
-   作者卡长得一模一样，层级只能靠字号区分。分档后"容器"本身就有轻重了。 */
-.card-hero {
-	position: relative;
-	border-radius: 1.25rem;
-	border: 1px solid var(--primary-100);
-	background-image: linear-gradient(135deg, #f4fafe 0%, #ffffff 42%, #eef7fc 100%);
-	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -24px rgba(42, 104, 144, 0.35);
-	overflow: hidden;
-}
-
-/* 顶部主色渐变细线：给容器一个视觉起点 */
-.card-hero::before {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 3px;
-	background: linear-gradient(90deg, var(--primary-300), var(--primary-500) 42%, transparent);
-}
-
-/* 右上柔光斑，避免大面积死白 */
-.card-hero::after {
-	content: '';
-	position: absolute;
-	top: -60%;
-	right: -10%;
-	width: 28rem;
-	height: 28rem;
-	background: radial-gradient(circle, rgba(140, 201, 227, 0.3), transparent 62%);
-	pointer-events: none;
-}
-
-.dark .card-hero {
-	border-color: rgba(140, 201, 227, 0.26);
-	background-image: linear-gradient(135deg, #182029 0%, #1e2632 45%, #161d27 100%);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 18px 40px -26px rgba(0, 0, 0, 0.85);
-}
-
-.dark .card-hero::after {
-	background: radial-gradient(circle, rgba(62, 151, 199, 0.26), transparent 62%);
-}
+   作者卡长得一模一样，层级只能靠字号区分。分档后"容器"本身就有轻重了。
+   原有的 .card-hero 一档随首页首屏换图和 /search 删除一起下线：
+   那两个使用者都没了，留下就是死代码。 */
 
 /* 内嵌块：浅灰底、无边框无阴影，装次要信息（统计等），不跟主卡抢重量 */
 .card-inset {
