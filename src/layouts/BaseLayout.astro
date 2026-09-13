@@ -24,9 +24,9 @@ const { title, description, image } = Astro.props;
 				if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
 					document.documentElement.classList.add('dark');
 				}
-				// 预览期背景变体：?bg=grid|glow|noise|none（放在 html 上，避免首屏闪一下默认背景；定稿后删除）
+				// 预览期背景变体：?bg=noise|none（放在 html 上，避免首屏闪一下默认背景；定稿后删除）
 				const bg = new URLSearchParams(location.search).get('bg');
-				if (['grid', 'glow', 'noise', 'none'].includes(bg)) {
+				if (['noise', 'none'].includes(bg)) {
 					document.documentElement.dataset.bg = bg;
 				}
 			})();

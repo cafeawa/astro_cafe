@@ -75,18 +75,13 @@
 }
 
 /* ===== 2. 基础布局与背景 ===== */
-/* 背景三层（自上而下）：噪点 → 网格 → 主色光斑。
-   直接画在 body 的 background-image 上，不引入额外 DOM，也不参与 z-index 排序，
-   因此正文、页脚永远盖在背景之上；顶栏的 backdrop-blur 也终于有东西可模糊。 */
+/* 背景已清空：网格纹理与主色光斑全部移除，页面就是一块纯色底
+   （浅色 #f8fafc / 深色 --surface-base）。
+   移除原因：两者都锚在顶部，会和即将上线的首页顶部大图抢同一块区域；
+   而光斑本质上是"没有图时的色彩替身"，有了图就该退场。
+   顶栏的 backdrop-blur 在首页滚动时由那张图提供可模糊的内容，其余页面退化为纯色。 */
 :root {
-	/* 注意：光斑的纵向锚点必须用 px。用 % 会按 body 总高度计算，
-	   长页面上光斑会被整体推到视口上方、彻底看不见（实测踩过）。 */
-	--bg-glow:
-		radial-gradient(58rem 38rem at 12% 0px, rgba(62, 151, 199, 0.14), transparent 62%),
-		radial-gradient(46rem 32rem at 92% 0px, rgba(140, 201, 227, 0.18), transparent 60%);
-	--bg-grid:
-		linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
-		linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+	/* 可选噪点肌理（?bg=noise 预览）：给纯色底加一层颗粒，避免大面积死平 */
 	--bg-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.05'/></svg>");
 }
 
@@ -97,20 +92,6 @@ body {
 	background-color: #f8fafc;
 	color: #334155;
 	-webkit-font-smoothing: antialiased;
-
-	background-image: var(--bg-grid), var(--bg-glow);
-	background-size: 34px 34px, 34px 34px, 100% 100%, 100% 100%;
-	background-repeat: repeat, repeat, no-repeat, no-repeat;
-}
-
-/* 深色底不用纯中性黑（zinc-950 会压不住冰蓝主色），改带一点冷倾向 */
-.dark {
-	--bg-glow:
-		radial-gradient(58rem 38rem at 12% 0px, rgba(62, 151, 199, 0.24), transparent 62%),
-		radial-gradient(46rem 32rem at 92% 0px, rgba(140, 201, 227, 0.14), transparent 60%);
-	--bg-grid:
-		linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-		linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 .dark body {
@@ -118,21 +99,12 @@ body {
 	color: var(--text-strong);
 }
 
-/* --- 背景变体：预览期用 ?bg=grid|glow|noise|none 直接对比，定稿后只留一种 --- */
-[data-bg='glow'] body {
-	background-image: var(--bg-glow);
-	background-size: 100% 100%, 100% 100%;
-	background-repeat: no-repeat, no-repeat;
-}
-
+/* --- 背景变体：?bg=noise|none，只用于对比"纯色底"和"加噪点"，定稿后整段删 ---
+   默认（无参数）就是纯色底，?bg=none 与默认等价。 */
 [data-bg='noise'] body {
-	background-image: var(--bg-noise), var(--bg-grid), var(--bg-glow);
-	background-size: 140px 140px, 34px 34px, 34px 34px, 100% 100%, 100% 100%;
-	background-repeat: repeat, repeat, repeat, no-repeat, no-repeat;
-}
-
-[data-bg='none'] body {
-	background-image: none;
+	background-image: var(--bg-noise);
+	background-size: 140px 140px;
+	background-repeat: repeat;
 }
 
 @media print {
