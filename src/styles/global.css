@@ -36,11 +36,16 @@
 	--primary-950: #132b3b;
 
 	--font-main: var(--font-atkinson, 'Atkinson Hyperlegible', sans-serif);
+
+	/* 首页首屏图底部渐变到的颜色：就是页面底色。两套主题都要有，
+	   否则一套是渐变收口、一套是硬边，观感对不上。 */
+	--hero-fade: #f8fafc;
 }
 
 /* 深色模式下把主强调色调浅，保证在深背景上有对比度 */
 .dark {
 	--primary-main: #8cc9e3;
+	--hero-fade: var(--surface-base);
 }
 
 /* ===== 1.1 暗色表面色阶 =====
