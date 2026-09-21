@@ -8,9 +8,18 @@ import TableOfContents from '../components/TableOfContents.astro';
 import Comments from '../components/Comments.astro';
 import { SITE_TITLE } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
 
-const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: Heading[];
+};
+
+const { title, description, pubDate, updatedDate, heroImage, tags, headings = [] } = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 ---
 
 <BaseLayout title={`${title} - ${SITE_TITLE}`} description={description} image={heroImage}>
@@ -21,13 +30,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				<!-- 封面图 -->
 				{
 					heroImage && (
-						<div class="mb-8">
+						<div class="post-cover mb-8">
 							<Image
 								width={1020}
 								height={510}
 								src={heroImage}
 								alt=""
-								class="w-full shadow-lg"
+								class="h-full w-full object-cover"
 							/>
 						</div>
 					)
@@ -65,9 +74,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 			</article>
 
 			<!-- 侧栏：目录 -->
-			<aside class="hidden lg:block w-64 flex-shrink-0">
-				<TableOfContents />
-			</aside>
+			{
+				tocHeadings.length >= 2 && (
+					<aside class="hidden lg:block w-64 flex-shrink-0">
+						<TableOfContents headings={tocHeadings} />
+					</aside>
+				)
+			}
 		</div>
 
 		<!-- 评论区 -->

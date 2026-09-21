@@ -1,46 +1,124 @@
 ---
-// 文章目录组件 — 客户端 JS 自动提取标题并生成锚点目录
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: Heading[];
+}
+
+const { headings } = Astro.props;
 ---
 
-<nav id="toc" class="hidden lg:block sticky top-24">
-	<div class="text-sm font-semibold text-slate-500 dark:text-zinc-400 uppercase tracking-wide mb-3">目录</div>
-	<ul id="toc-list" class="space-y-1.5 text-sm border-l-2 border-slate-200 dark:border-zinc-800">
-		<!-- JS 动态生成 -->
+<nav
+	id="toc"
+	aria-label="文章目录"
+	class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2"
+>
+	<div class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-zinc-400">
+		目录
+	</div>
+	<ul class="space-y-1 text-sm border-l-2 border-slate-200 dark:border-zinc-800">
+		{
+			headings.map((heading) => (
+				<li>
+					<a
+						href={`#${heading.slug}`}
+						data-toc-link
+						class:list={[
+							'toc-link block -ml-0.5 border-l-2 border-transparent py-0.5 transition-colors',
+							heading.depth === 3
+								? 'pl-6 text-slate-500 dark:text-zinc-400'
+								: 'pl-3 font-medium text-slate-700 dark:text-zinc-300',
+						]}
+					>
+						{heading.text}
+					</a>
+				</li>
+			))
+		}
 	</ul>
 </nav>
 
 <script>
-	function buildTOC() {
-		const prose = document.querySelector('.prose');
-		if (!prose) return;
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+	const sections = links
+		.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+		.filter((section): section is HTMLElement => section !== null);
 
-		const headings = prose.querySelectorAll('h2, h3');
-		if (headings.length < 2) {
-			document.getElementById('toc')?.remove();
-			return;
+	let ticking = false;
+
+	function updateActiveHeading() {
+		const anchorOffset = 112;
+		let activeSection = sections[0];
+
+		for (const section of sections) {
+			if (section.getBoundingClientRect().top <= anchorOffset) activeSection = section;
+			else break;
 		}
 
-		const list = document.getElementById('toc-list');
-		if (!list) return;
-
-		headings.forEach((heading) => {
-			// 给标题加 id 以便锚点跳转
-			const id = heading.textContent?.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9一-龥-]/g, '') || '';
-			heading.id = id;
-
-			const li = document.createElement('li');
-			const a = document.createElement('a');
-			a.href = `#${id}`;
-			a.textContent = heading.textContent;
-			a.className = heading.tagName === 'H3'
-				? 'block pl-4 text-slate-500 dark:text-zinc-400 hover:text-[var(--primary-main)] dark:hover:text-primary-300 transition-colors'
-				: 'block text-slate-700 dark:text-zinc-300 hover:text-[var(--primary-main)] dark:hover:text-primary-300 transition-colors font-medium';
-			li.appendChild(a);
-			list.appendChild(li);
+		links.forEach((link) => {
+			const isActive = activeSection ? link.hash === `#${activeSection.id}` : false;
+			link.classList.toggle('is-active', isActive);
+			if (isActive) link.setAttribute('aria-current', 'location');
+			else link.removeAttribute('aria-current');
 		});
 
-		document.getElementById('toc')?.classList.remove('hidden');
+		ticking = false;
 	}
 
-	buildTOC();
+	function requestActiveHeadingUpdate() {
+		if (ticking) return;
+		ticking = true;
+		requestAnimationFrame(updateActiveHeading);
+	}
+
+	updateActiveHeading();
+	document.addEventListener('scroll', requestActiveHeadingUpdate, { passive: true });
 </script>
+
+<style>
+	#toc {
+		scrollbar-width: thin;
+		scrollbar-color: #cbd5e1 transparent;
+		scrollbar-gutter: stable;
+	}
+
+	#toc::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	#toc::-webkit-scrollbar-button {
+		display: none;
+	}
+
+	#toc::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	#toc::-webkit-scrollbar-thumb {
+		border-radius: 9999px;
+		background: #cbd5e1;
+	}
+
+	:global(.dark) #toc {
+		scrollbar-color: var(--surface-line-strong) transparent;
+	}
+
+	:global(.dark) #toc::-webkit-scrollbar-thumb {
+		background: var(--surface-line-strong);
+	}
+
+	.toc-link:hover,
+	.toc-link.is-active {
+		border-left-color: var(--primary-main);
+		color: var(--primary-700);
+	}
+
+	:global(.dark) .toc-link:hover,
+	:global(.dark) .toc-link.is-active {
+		color: var(--primary-300);
+	}
+</style>
