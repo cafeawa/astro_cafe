@@ -7,9 +7,10 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "admin": "node server/admin.js",
     "waline": "node server/waline.js",
     "init-db": "node server/init-db.js",
-    "test": "node test/schema.test.js && node test/search-page.test.js",
+    "test": "node test/schema.test.js && node test/search-page.test.js && node test/frontmatter.test.js && node test/admin-api.test.js",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",

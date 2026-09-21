@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>文章控制台 · cafe</title>
+		<link rel="stylesheet" href="/styles.css" />
+	</head>
+	<body>
+		<header class="topbar">
+			<div class="brand">
+				<span class="brand-dot"></span>
+				<span>文章控制台</span>
+				<span id="root-path" class="root-path"></span>
+			</div>
+			<div class="topbar-actions">
+				<span id="save-state" class="save-state">已保存</span>
+				<button id="btn-new" type="button" class="btn">＋ 新建</button>
+				<button id="btn-save" type="button" class="btn primary">保存<kbd>Ctrl+S</kbd></button>
+				<button id="btn-delete" type="button" class="btn danger-ghost">删除</button>
+				<div class="dev">
+					<span id="dev-dot" class="dot" data-state="unknown"></span>
+					<span id="dev-label" class="dev-label">检查预览服务…</span>
+					<button id="btn-dev" type="button" class="btn ghost">启动</button>
+					<button id="btn-dev-logs" type="button" class="btn ghost">日志</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="layout">
+			<aside class="sidebar">
+				<div class="sidebar-head">
+					<input id="search" type="search" placeholder="搜索标题 / slug / 标签" autocomplete="off" />
+					<span id="post-count" class="muted"></span>
+				</div>
+				<div id="post-list" class="post-list"></div>
+			</aside>
+
+			<section class="editor">
+				<div id="empty" class="empty">
+					<p>从左边选一篇文章，或者点右上角「＋ 新建」。</p>
+					<p class="muted">保存后会立刻写进 <code>src/content/blog/</code>，预览面板用的是真实的 astro dev 页面。</p>
+				</div>
+
+				<div id="editor-body" hidden>
+					<div class="fields">
+						<label class="field span-2">
+							<span>标题</span>
+							<input id="f-title" type="text" placeholder="文章标题" />
+						</label>
+						<label class="field">
+							<span>slug（文件名 / URL）</span>
+							<input id="f-slug" type="text" spellcheck="false" />
+						</label>
+						<label class="field">
+							<span>发布日期</span>
+							<input id="f-date" type="date" />
+						</label>
+						<label class="field">
+							<span>更新日期（可选）</span>
+							<input id="f-updated" type="date" />
+						</label>
+						<label class="field span-2">
+							<span>摘要</span>
+							<textarea id="f-desc" rows="2" placeholder="列表和 SEO 里显示的一句话"></textarea>
+						</label>
+						<label class="field span-2">
+							<span>标签（逗号分隔）</span>
+							<input id="f-tags" type="text" list="tag-options" placeholder="Astro, 笔记" />
+							<datalist id="tag-options"></datalist>
+						</label>
+						<div class="field span-2 toggles">
+							<label class="check"><input id="f-draft" type="checkbox" /> 草稿</label>
+							<label class="check"><input id="f-mdx" type="checkbox" /> MDX（需要嵌入组件时才勾）</label>
+							<span class="cover">
+								<span class="muted">封面：</span>
+								<img id="cover-thumb" alt="" hidden />
+								<span id="cover-name">未设置</span>
+								<button id="btn-clear-cover" type="button" class="btn ghost small">清除</button>
+							</span>
+						</div>
+						<p class="hint span-2">
+							注意：<code>draft: true</code> 目前只把文章从首页 / 列表 / 标签 / 归档里隐藏，
+							<code>src/pages/blog/[...slug].astro</code> 和 <code>rss.xml.js</code> 用的是未过滤的
+							<code>getCollection</code>，草稿页仍会被构建、可被 URL 访问并进入 RSS。
+						</p>
+					</div>
+
+					<div class="editor-toolbar">
+						<button type="button" class="btn ghost small" data-wrap="## " data-block="1">H2</button>
+						<button type="button" class="btn ghost small" data-wrap="### " data-block="1">H3</button>
+						<button type="button" class="btn ghost small" data-wrap="**">粗体</button>
+						<button type="button" class="btn ghost small" data-wrap="*">斜体</button>
+						<button type="button" class="btn ghost small" data-wrap="`">行内代码</button>
+						<button type="button" class="btn ghost small" data-wrap="> " data-block="1">引用</button>
+						<button type="button" class="btn ghost small" data-wrap="- " data-block="1">列表</button>
+						<button type="button" class="btn ghost small" data-link="1">链接</button>
+						<button type="button" class="btn ghost small" data-code="1">代码块</button>
+						<button type="button" class="btn ghost small" data-rule="1">分割线</button>
+						<span class="spacer"></span>
+						<span id="body-stats" class="muted"></span>
+					</div>
+
+					<textarea id="f-body" spellcheck="false" placeholder="正文（Markdown）"></textarea>
+				</div>
+			</section>
+
+			<section class="side">
+				<nav class="tabs">
+					<button type="button" class="tab active" data-tab="preview">预览</button>
+					<button type="button" class="tab" data-tab="assets">封面图</button>
+					<button type="button" class="tab" data-tab="publish">发布</button>
+				</nav>
+
+				<div id="panel-preview" class="panel">
+					<div class="panel-bar">
+						<button id="btn-refresh-preview" type="button" class="btn ghost small">刷新</button>
+						<label class="check"><input id="autosave" type="checkbox" /> 自动保存</label>
+						<span id="preview-note" class="muted"></span>
+					</div>
+					<iframe id="preview-frame" title="文章预览"></iframe>
+				</div>
+
+				<div id="panel-assets" class="panel" hidden>
+					<div class="panel-bar">
+						<label class="btn ghost small file-btn">
+							上传图片<input id="asset-upload" type="file" accept="image/*" hidden />
+						</label>
+						<button id="btn-refresh-assets" type="button" class="btn ghost small">刷新</button>
+					</div>
+					<div id="asset-grid" class="asset-grid"></div>
+					<p class="hint">
+						点图片即设为封面，保存时会自动换算成 <code>image()</code> 需要的相对路径。图片存到
+						<code>src/assets/</code>。
+					</p>
+				</div>
+
+				<div id="panel-publish" class="panel" hidden>
+					<h3>本地构建</h3>
+					<p class="hint">跑 <code>pnpm build</code>（astro build + pagefind），重建站内搜索索引。</p>
+					<button id="btn-build" type="button" class="btn primary">构建并重建搜索索引</button>
+					<pre id="build-log" class="log" hidden></pre>
+
+					<h3>提交并推送</h3>
+					<div class="panel-bar">
+						<button id="btn-git-refresh" type="button" class="btn ghost small">刷新改动</button>
+						<span id="git-branch" class="muted"></span>
+					</div>
+					<div id="git-files" class="git-files"></div>
+					<input id="git-message" type="text" placeholder="提交信息" />
+					<button id="btn-publish" type="button" class="btn primary">提交并推送</button>
+					<pre id="publish-log" class="log" hidden></pre>
+					<p class="hint">推送后 GitHub Actions 会跑 CI（<code>astro check</code> + <code>build</code>）。</p>
+				</div>
+			</section>
+		</main>
+
+		<div id="toast" class="toast" hidden></div>
+		<script type="module" src="/app.js"></script>
+	</body>
+</html>
