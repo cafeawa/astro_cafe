@@ -40,4 +40,4 @@ export const HERO = {
 export const POSTS_PER_PAGE = 6;
 
 // Waline 评论
-export const WALINE_SERVER_URL = 'http://localhost:8360';
+export const WALINE_SERVER_URL = import.meta.env.PUBLIC_WALINE_SERVER_URL || 'http://localhost:8360';

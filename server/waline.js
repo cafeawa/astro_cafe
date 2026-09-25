@@ -27,6 +27,7 @@ if (process.env.SQLITE_PATH && ensureDatabase()) {
 const { default: createWaline } = await import('@waline/vercel');
 
 const PORT = process.env.WALINE_PORT || 8360;
+const HOST = process.env.WALINE_HOST || '127.0.0.1';
 const handler = createWaline();
 
 const server = createServer((req, res) => {
@@ -39,7 +40,7 @@ const server = createServer((req, res) => {
 	});
 });
 
-server.listen(PORT, () => {
-	console.log(`Waline 评论服务: http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+	console.log(`Waline 评论服务: http://${HOST}:${PORT}`);
 	console.log(`数据文件: ${dbDir}`);
 });
