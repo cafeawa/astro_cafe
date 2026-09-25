@@ -20,7 +20,7 @@ export const jwtSecretFile = resolve(dbDir, '.jwt-secret');
 export const CREATE_TABLES_SQL = `
 	CREATE TABLE IF NOT EXISTS wl_Comment (
 		id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, url TEXT, comment TEXT,
-		link TEXT, mail TEXT, nick TEXT, pid INTEGER DEFAULT 0, rid INTEGER DEFAULT 0,
+		link TEXT, mail TEXT, nick TEXT, pid INTEGER, rid INTEGER,
 		ua TEXT, ip TEXT, type TEXT DEFAULT 'comment', status TEXT DEFAULT 'approved',
 		sticky INTEGER DEFAULT 0, "like" INTEGER DEFAULT 0, dislike INTEGER DEFAULT 0,
 		insertedAt TEXT DEFAULT (datetime('now','localtime')),
@@ -54,10 +54,19 @@ export function ensureDatabase() {
 	try {
 		db.exec(CREATE_TABLES_SQL);
 		ensureTimestampColumns(db);
+		normalizeRootCommentIds(db);
 	} finally {
 		db.close();
 	}
 	return created;
+}
+
+// Waline 以 NULL 标识根评论。旧 schema 的 DEFAULT 0 会造成评论数能统计到，
+// 但评论列表用 `rid IS NULL` 查询时看不到该评论。
+function normalizeRootCommentIds(db) {
+	const columns = db.prepare('PRAGMA table_info(wl_Comment)').all().map((column) => column.name);
+	if (columns.includes('pid')) db.prepare('UPDATE wl_Comment SET pid = NULL WHERE pid = 0').run();
+	if (columns.includes('rid')) db.prepare('UPDATE wl_Comment SET rid = NULL WHERE rid = 0').run();
 }
 
 function ensureTimestampColumns(db) {

@@ -49,10 +49,12 @@ test(
 			}
 
 			db.prepare("INSERT INTO wl_Comment (url, comment) VALUES ('/post', 'hello')").run();
-			const comment = db.prepare('SELECT type, status, insertedAt, createdAt, updatedAt FROM wl_Comment').get();
+			const comment = db.prepare('SELECT type, status, pid, rid, insertedAt, createdAt, updatedAt FROM wl_Comment').get();
 
 			assert.equal(comment.type, 'comment');
 			assert.equal(comment.status, 'approved');
+			assert.equal(comment.pid, null);
+			assert.equal(comment.rid, null);
 			assert.match(comment.insertedAt, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
 			assert.match(comment.createdAt, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
 			assert.match(comment.updatedAt, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
@@ -60,6 +62,31 @@ test(
 			db.close();
 		}
 	})
+);
+
+test(
+	'ensureDatabase migrates legacy root comment ids from 0 to NULL',
+	withTempDataDir(async (dir) => {
+		const schema = await importSchema(dir);
+		schema.ensureDatabase();
+
+		const db = new Database(schema.dbFile);
+		try {
+			db.prepare("INSERT INTO wl_Comment (url, comment, pid, rid) VALUES ('/legacy', 'hello', 0, 0)").run();
+		} finally {
+			db.close();
+		}
+
+		schema.ensureDatabase();
+
+		const migrated = new Database(schema.dbFile, { readonly: true });
+		try {
+			const comment = migrated.prepare("SELECT pid, rid FROM wl_Comment WHERE url = '/legacy'").get();
+			assert.deepEqual(comment, { pid: null, rid: null });
+		} finally {
+			migrated.close();
+		}
+	}),
 );
 
 test(
